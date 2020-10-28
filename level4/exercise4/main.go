@@ -8,14 +8,14 @@ import (
 
 func increase(routineName string, mutex *sync.Mutex) {
 
-	//	mutex.Lock()
+	mutex.Lock()
 
 	for i := 0; i < 10; i++ {
 		fmt.Printf("%s: new value %d\n", routineName, i)
 
 	}
 
-	//	defer mutex.Unlock()
+	defer mutex.Unlock()
 
 }
 

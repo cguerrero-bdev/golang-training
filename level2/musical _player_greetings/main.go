@@ -6,20 +6,24 @@ type Trumpeter struct {
 	Name string
 }
 
-func (trumpeter *Trumpeter) Greetings() {
-	fmt.Printf("Hi, my name is %s and I'm a trumpeter\n", trumpeter.Name)
+func (trumpeter *Trumpeter) Greetings() string {
+	result := fmt.Sprintf("Hi, my name is %s and I'm a trumpeter\n", trumpeter.Name)
+	fmt.Printf(result)
+	return result
 }
 
 type Violinist struct {
 	Name string
 }
 
-func (violinist *Violinist) Greetings() {
-	fmt.Printf("Hi, my name is %s and I'm a violinist\n", violinist.Name)
+func (violinist *Violinist) Greetings() string {
+	result := fmt.Sprintf("Hi, my name is %s and I'm a violinist\n", violinist.Name)
+	fmt.Printf(result)
+	return result
 }
 
 type MusicalPlayer interface {
-	Greetings()
+	Greetings() string
 }
 
 func main() {
