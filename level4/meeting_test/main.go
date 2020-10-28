@@ -1,33 +1,44 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func findSubstring(sList []string, s2 string, channel chan string) {
+func findString(sList []string, s2 string, i1 int, i2 int, channel chan int) {
 
-	for i := 0; i < len(sList); i++ {
+	for i, iCounter := i1, 0; i <= i2; i++ {
 
 		if sList[i] == s2 {
-			channel <- sList[i]
+			channel <- i1 + iCounter
 		}
+
+		iCounter++
 	}
+
+	close(channel)
 
 }
 
 func main() {
 
-	stringList := []string{"test", "exam", "test", "exam"}
+	sList := []string{"one", "two", "three", "four", "one", "two", "three", "four"}
+	stringToFind := "two"
 
-	channel := make(chan string, len(stringList))
+	result := make([]int, 0)
 
-	go findSubstring(stringList[0:1], "test", channel)
+	c := make(chan int, len(sList))
+	findString(sList, stringToFind, 0, 3, c)
 
-	//go findSubstring(stringList[2:3], "test", channel)
+	c2 := make(chan int, len(sList))
+	findString(sList, stringToFind, 4, 7, c2)
 
-	for range channel {
-		result, ok := <-channel
-		if ok {
-			fmt.Println(result)
-		}
+	for r := range c {
+		result = append(result, r)
 	}
 
+	for r := range c2 {
+		result = append(result, r)
+	}
+
+	fmt.Println(result)
 }

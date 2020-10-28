@@ -37,20 +37,24 @@ func (interfaceImplementor *interfaceImplementor3) GetValue() int {
 	return 3
 }
 
-func printInterfaceInformation(ci customInterface) {
+func printInterfaceInformation(ci customInterface) string {
 
 	fmt.Printf("\nInterface message: %s\n", ci.GetMessage())
 	fmt.Printf("Interface value: %d\n", ci.GetValue())
 
+	var msg string
+
 	switch ci.(type) {
 
 	case *interfaceImplementor:
-		fmt.Println("Implemented by interfaceImplementor")
+		msg = "Implemented by interfaceImplementor"
 	case *interfaceImplementor2:
-		fmt.Println("Implemented by interfaceImplementor2")
+		msg = "Implemented by interfaceImplementor2"
 	case *interfaceImplementor3:
-		fmt.Println("Implemented by interfaceImplementor3")
+		msg = "Implemented by interfaceImplementor3"
 	}
+
+	return msg
 }
 
 func main() {
