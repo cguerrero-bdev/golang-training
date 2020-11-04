@@ -1,4 +1,3 @@
-// main.go
 package main
 
 import (
@@ -10,10 +9,10 @@ import (
 )
 
 type Product struct {
-	Id    string  `json:"Id"`
-	Code  string  `json:"Code"`
-	Name  string  `json:"Name"`
-	Price float64 `json:"Price"`
+	Id    string  `json:"id"`
+	Code  string  `json:"code"`
+	Name  string  `json:"name"`
+	Price float64 `json:"price"`
 }
 
 type ProductInventory struct {
@@ -35,6 +34,7 @@ func getProductInventoryById(w http.ResponseWriter, r *http.Request) {
 	for _, productInventory := range inventory {
 		if productInventory.Product.Id == id {
 			json.NewEncoder(w).Encode(productInventory)
+			break
 		}
 	}
 }
@@ -55,6 +55,25 @@ func deleteProductInventory(w http.ResponseWriter, r *http.Request) {
 	for i, productInventory := range inventory {
 		if productInventory.Product.Id == id {
 			inventory = append(inventory[:i], inventory[i+1:]...)
+			break
+		}
+	}
+
+}
+
+func updateProductInventory(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var newProductInventory ProductInventory
+	json.Unmarshal(reqBody, &newProductInventory)
+
+	for i, productInventory := range inventory {
+		if productInventory.Product.Id == id {
+			inventory[i] = newProductInventory
+			break
 		}
 	}
 
@@ -62,10 +81,11 @@ func deleteProductInventory(w http.ResponseWriter, r *http.Request) {
 
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/inventory", getInventory)
+	router.HandleFunc("/inventory", getInventory).Methods("GET")
 	router.HandleFunc("/inventory/product", addProductInventory).Methods("POST")
+	router.HandleFunc("/inventory/product/{id}", updateProductInventory).Methods("PUT")
 	router.HandleFunc("/inventory/product/{id}", deleteProductInventory).Methods("DELETE")
-	router.HandleFunc("/inventory/product/{id}", getProductInventoryById)
+	router.HandleFunc("/inventory/product/{id}", getProductInventoryById).Methods("GET")
 	http.ListenAndServe(":3000", router)
 }
 
