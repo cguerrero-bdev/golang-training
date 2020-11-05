@@ -4,41 +4,29 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+
+	"github.com/cguerrero-bdev/golang-training/final-project/pkg/persistence"
+
+	"github.com/cguerrero-bdev/golang-training/final-project/pkg/logic"
+	"github.com/cguerrero-bdev/golang-training/final-project/pkg/presentation"
 )
 
-func getQuestions(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func getQuestionById(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func getQuestionByUserId(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func createQuestion(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func updateQuestion(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func deleteQuestion(w http.ResponseWriter, r *http.Request) {
-
-}
-
 func handleRequests() {
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/questions", getQuestions).Methods("GET")
-	router.HandleFunc("/questions/{id}", getQuestionById).Methods("GET")
-	router.HandleFunc("/questions/user/{id}", getQuestionByUserId).Methods("GET")
 
-	router.HandleFunc("/questions", createQuestion).Methods("POST")
-	router.HandleFunc("/questions/{id}", updateQuestion).Methods("PUT")
-	router.HandleFunc("/questions/{id}", deleteQuestion).Methods("DELETE")
+	connection := persistence.GetDataBaseConnection()
+
+	questionRepository := persistence.QuestionRepository{connection}
+	questionManager := logic.QuestionManager{questionRepository}
+	questionController := presentation.QuestionController{questionManager}
+
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/questions", questionController.GetQuestions).Methods("GET")
+	router.HandleFunc("/questions/{id}", questionController.GetQuestionById).Methods("GET")
+	router.HandleFunc("/questions/user/{id}", questionController.GetQuestionByUserId).Methods("GET")
+
+	router.HandleFunc("/questions", questionController.CreateQuestion).Methods("POST")
+	router.HandleFunc("/questions/{id}", questionController.UpdateQuestion).Methods("PUT")
+	router.HandleFunc("/questions/{id}", questionController.DeleteQuestion).Methods("DELETE")
 
 	http.ListenAndServe(":3000", router)
 }
