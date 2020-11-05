@@ -1,45 +1,61 @@
 package logic
 
-type QuestionEntity interface {
-	GetId() int
-	GetText() string
-	GetUserName() string
-}
+import (
+	"github.com/cguerrero-bdev/golang-training/final-project/pkg/persistence"
+)
 
-type Question interface {
-	GetId() int
-	GetText() string
-	GetUserName() string
-}
-
-type QuestionRepository interface {
-	GetQuestions()
-	GetQuestionById(id int)
-	GetQuestionByUserId(id int)
-	CreateQuestion(q QuestionEntity) QuestionEntity
-	UpdateQuestion(q QuestionEntity) QuestionEntity
-	DeleteQuestionById(id int)
+type Question struct {
+	Id       int
+	Text     string
+	UserName string
 }
 
 type QuestionManager struct {
-	QuestionRepository QuestionRepository
+	QuestionRepository persistence.QuestionRepository
+	UserRepository     persistence.UserRepository
 }
 
 func (questionManager *QuestionManager) GetQuestions() {
 
 }
 
-func (questionManager *QuestionManager) GetQuestionById(id int) {
+func (questionManager *QuestionManager) GetQuestionById(id int) (Question, error) {
 
+	questionEntity, err := questionManager.QuestionRepository.GetQuestionById(id)
+
+	if err != nil {
+
+		return Question{}, err
+	}
+
+	userEntity, err := questionManager.UserRepository.GetUserById(questionEntity.Id)
+
+	if err != nil {
+
+		return Question{}, err
+	}
+
+	result := Question{
+		Id:       questionEntity.Id,
+		Text:     questionEntity.Text,
+		UserName: userEntity.UserName,
+	}
+
+	return result, err
 }
 
 func (questionManager *QuestionManager) GetQuestionByUserId(id int) {
 
 }
 
-func (questionManager *QuestionManager) CreateQuestion(q Question) Question {
+func (questionManager *QuestionManager) CreateQuestion(question Question) (Question, error) {
 
-	return questionManager.QuestionRepository.CreateQuestion(q)
+	userEntity, err := questionManager.UserRepository.GetUserByName(question.UserName)
+
+	questionEntity := persistence.QuestionEntity{Id: question.Id, Text: question.Text, UserId: userEntity.Id}
+	questionEntity, err = questionManager.QuestionRepository.CreateQuestion(questionEntity)
+
+	return question, err
 
 }
 

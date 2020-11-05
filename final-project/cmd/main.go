@@ -3,21 +3,31 @@ package main
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
-
-	"github.com/cguerrero-bdev/golang-training/final-project/pkg/persistence"
-
 	"github.com/cguerrero-bdev/golang-training/final-project/pkg/logic"
+	"github.com/cguerrero-bdev/golang-training/final-project/pkg/persistence"
 	"github.com/cguerrero-bdev/golang-training/final-project/pkg/presentation"
+	"github.com/gorilla/mux"
 )
 
 func handleRequests() {
 
 	connection := persistence.GetDataBaseConnection()
 
-	questionRepository := persistence.QuestionRepository{connection}
-	questionManager := logic.QuestionManager{questionRepository}
-	questionController := presentation.QuestionController{questionManager}
+	userRepository := persistence.UserRepository{
+		Connection: connection,
+	}
+
+	questionRepository := persistence.QuestionRepository{
+		Connection: connection,
+	}
+
+	questionManager := logic.QuestionManager{
+		QuestionRepository: questionRepository,
+		UserRepository:     userRepository,
+	}
+	questionController := presentation.QuestionController{
+		QuestionManager: questionManager,
+	}
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/questions", questionController.GetQuestions).Methods("GET")
