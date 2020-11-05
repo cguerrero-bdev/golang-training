@@ -11,24 +11,6 @@ import (
 	"github.com/cguerrero-bdev/golang-training/final-project/pkg/logic"
 )
 
-/*
-type Question interface {
-	GetId() int
-	GetText() string
-	GetUserName() string
-}
-
-
-type QuestionManager interface {
-	GetQuestions()
-	GetQuestionById(id int)
-	GetQuestionByUserId(id int)
-	CreateQuestion(question Question)
-	UpdateQuestion(question Question)
-	DeleteQuestionById(id int)
-}
-*/
-
 type JsonQuestion struct {
 	Id       string `json:"id"`
 	Text     string `json:"text"`
@@ -50,17 +32,25 @@ func (questionController *QuestionController) GetQuestionById(w http.ResponseWri
 
 	question, _ := questionController.QuestionManager.GetQuestionById(id)
 
-	result := JsonQuestion{
-		Id:       strconv.Itoa(question.Id),
-		Text:     question.Text,
-		UserName: question.UserName,
-	}
+	result := createJsonQuestion(&question)
 
 	json.NewEncoder(w).Encode(result)
 
 }
 
-func (questionController *QuestionController) GetQuestionByUserId(w http.ResponseWriter, r *http.Request) {
+func (questionController *QuestionController) GetQuestionsByUserName(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	userName, _ := vars["userName"]
+
+	questions, _ := questionController.QuestionManager.GetQuestionsByUserName(userName)
+
+	result := make([]JsonQuestion, 0)
+	for _, question := range questions {
+		result = append(result, createJsonQuestion(&question))
+	}
+
+	json.NewEncoder(w).Encode(result)
 
 }
 
@@ -82,4 +72,15 @@ func (questionController *QuestionController) UpdateQuestion(w http.ResponseWrit
 
 func (questionController *QuestionController) DeleteQuestion(w http.ResponseWriter, r *http.Request) {
 
+}
+
+func createJsonQuestion(question *logic.Question) JsonQuestion {
+
+	result := JsonQuestion{
+		Id:       strconv.Itoa(question.Id),
+		Text:     question.Text,
+		UserName: question.UserName,
+	}
+
+	return result
 }

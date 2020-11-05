@@ -32,7 +32,7 @@ func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/questions", questionController.GetQuestions).Methods("GET")
 	router.HandleFunc("/questions/{id}", questionController.GetQuestionById).Methods("GET")
-	router.HandleFunc("/questions/user/{id}", questionController.GetQuestionByUserId).Methods("GET")
+	router.HandleFunc("/questions/user/{userName}", questionController.GetQuestionsByUserName).Methods("GET")
 
 	router.HandleFunc("/questions", questionController.CreateQuestion).Methods("POST")
 	router.HandleFunc("/questions/{id}", questionController.UpdateQuestion).Methods("PUT")

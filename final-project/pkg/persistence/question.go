@@ -51,8 +51,25 @@ func (questionRepository *QuestionRepository) GetQuestionById(id int) (QuestionE
 
 }
 
-func (questionRepository *QuestionRepository) GetQuestionByUserId(id int) {
+func (questionRepository *QuestionRepository) GetQuestionsByUserId(id int) ([]QuestionEntity, error) {
 
+	rows, err := questionRepository.Connection.Query(context.Background(), "select id, text, created_by from question where created_by=$1", id)
+
+	result := make([]QuestionEntity, 0)
+
+	for rows.Next() {
+
+		questionEntity := QuestionEntity{}
+
+		err := rows.Scan(&questionEntity.Id, &questionEntity.Text, &questionEntity.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, questionEntity)
+	}
+
+	return result, err
 }
 
 func (questionRepository *QuestionRepository) CreateQuestion(q QuestionEntity) (QuestionEntity, error) {
