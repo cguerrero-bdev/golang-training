@@ -23,6 +23,15 @@ type QuestionController struct {
 
 func (questionController *QuestionController) GetQuestions(w http.ResponseWriter, r *http.Request) {
 
+	questions, _ := questionController.QuestionManager.GetQuestions()
+
+	result := make([]JsonQuestion, 0)
+	for _, question := range questions {
+		result = append(result, createJsonQuestion(&question))
+	}
+
+	json.NewEncoder(w).Encode(result)
+
 }
 
 func (questionController *QuestionController) GetQuestionById(w http.ResponseWriter, r *http.Request) {

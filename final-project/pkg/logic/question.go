@@ -15,8 +15,21 @@ type QuestionManager struct {
 	UserRepository     persistence.UserRepository
 }
 
-func (questionManager *QuestionManager) GetQuestions() {
+func (questionManager *QuestionManager) GetQuestions() ([]Question, error) {
 
+	questionEntities, err := questionManager.QuestionRepository.GetQuestions()
+
+	if err != nil {
+		return []Question{}, err
+	}
+
+	result := make([]Question, 0)
+	for _, questionEntity := range questionEntities {
+		result = append(result, createQuestion(&questionEntity, ""))
+
+	}
+
+	return result, err
 }
 
 func (questionManager *QuestionManager) GetQuestionById(id int) (Question, error) {

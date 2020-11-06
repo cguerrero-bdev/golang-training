@@ -16,27 +16,25 @@ type QuestionRepository struct {
 	Connection *pgx.Conn
 }
 
-/*
-func getQuestions() error {
-	rows, _ := connection.Query(context.Background(), "select * from tasks")
+func (questionRepository *QuestionRepository) GetQuestions() ([]QuestionEntity, error) {
+
+	rows, err := questionRepository.Connection.Query(context.Background(), "select id, text, created_by from question")
+
+	result := make([]QuestionEntity, 0)
 
 	for rows.Next() {
-		var id int32
-		var description string
-		err := rows.Scan(&id, &description)
+
+		questionEntity := QuestionEntity{}
+
+		err := rows.Scan(&questionEntity.Id, &questionEntity.Text, &questionEntity.UserId)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		fmt.Printf("%d. %s\n", id, description)
+
+		result = append(result, questionEntity)
 	}
 
-	return rows.Err()
-}
-
-*/
-
-func (questionRepository *QuestionRepository) GetQuestions() {
-
+	return result, err
 }
 
 func (questionRepository *QuestionRepository) GetQuestionById(id int) (QuestionEntity, error) {
