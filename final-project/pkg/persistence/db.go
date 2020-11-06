@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const DATABASE_URL = "postgres://postgres:admin@localhost:5432/postgres?search_path=qaa"
+const DATABASE_URL = "postgres://postgres:admin@localhost:5432/training?search_path=qaa"
 
 func GetDataBaseConnection() *pgx.Conn {
 

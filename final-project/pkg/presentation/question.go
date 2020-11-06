@@ -12,9 +12,11 @@ import (
 )
 
 type JsonQuestion struct {
-	Id       string `json:"id"`
-	Text     string `json:"text"`
-	UserName string `json:"username"`
+	Id         string `json:"id"`
+	Statement  string `json:"statement"`
+	UserName   string `json:"username"`
+	Answere    string `json:"answer"`
+	AnsweredBy string `json:"answeredby"`
 }
 
 type QuestionController struct {
@@ -69,13 +71,29 @@ func (questionController *QuestionController) CreateQuestion(w http.ResponseWrit
 	var jsonQuestion JsonQuestion
 	json.Unmarshal(reqBody, &jsonQuestion)
 	id, _ := strconv.Atoi(jsonQuestion.Id)
-	question := logic.Question{Id: id, Text: jsonQuestion.Text, UserName: jsonQuestion.UserName}
+	question := logic.Question{Id: id, Statement: jsonQuestion.Statement, UserName: jsonQuestion.UserName}
 	questionController.QuestionManager.CreateQuestion(question)
 	json.NewEncoder(w).Encode(jsonQuestion)
 
 }
 
 func (questionController *QuestionController) UpdateQuestion(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var jsonQuestion JsonQuestion
+	json.Unmarshal(reqBody, &jsonQuestion)
+	id, _ := strconv.Atoi(jsonQuestion.Id)
+
+	question := logic.Question{
+		Id:         id,
+		Statement:  jsonQuestion.Statement,
+		UserName:   jsonQuestion.UserName,
+		Answere:    jsonQuestion.Answere,
+		AnsweredBy: jsonQuestion.AnsweredBy,
+	}
+
+	questionController.QuestionManager.UpdateQuestion(question)
+	json.NewEncoder(w).Encode(jsonQuestion)
 
 }
 
@@ -86,9 +104,11 @@ func (questionController *QuestionController) DeleteQuestion(w http.ResponseWrit
 func createJsonQuestion(question *logic.Question) JsonQuestion {
 
 	result := JsonQuestion{
-		Id:       strconv.Itoa(question.Id),
-		Text:     question.Text,
-		UserName: question.UserName,
+		Id:         strconv.Itoa(question.Id),
+		Statement:  question.Statement,
+		UserName:   question.UserName,
+		Answere:    question.Answere,
+		AnsweredBy: question.AnsweredBy,
 	}
 
 	return result

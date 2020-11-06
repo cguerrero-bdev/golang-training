@@ -1,13 +1,17 @@
 package logic
 
 import (
+	"fmt"
+
 	"github.com/cguerrero-bdev/golang-training/final-project/pkg/persistence"
 )
 
 type Question struct {
-	Id       int
-	Text     string
-	UserName string
+	Id         int
+	Statement  string
+	UserName   string
+	Answere    string
+	AnsweredBy string
 }
 
 type QuestionManager struct {
@@ -29,6 +33,10 @@ func (questionManager *QuestionManager) GetQuestions() ([]Question, error) {
 
 	}
 
+	if err != nil {
+		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
+	}
+
 	return result, err
 }
 
@@ -47,9 +55,13 @@ func (questionManager *QuestionManager) GetQuestionById(id int) (Question, error
 	}
 
 	result := Question{
-		Id:       questionEntity.Id,
-		Text:     questionEntity.Text,
-		UserName: userEntity.UserName,
+		Id:        questionEntity.Id,
+		Statement: questionEntity.Statement,
+		UserName:  userEntity.UserName,
+	}
+
+	if err != nil {
+		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
 	}
 
 	return result, err
@@ -76,22 +88,51 @@ func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) 
 
 	}
 
+	if err != nil {
+		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
+	}
+
 	return result, err
 }
 
 func (questionManager *QuestionManager) CreateQuestion(question Question) (Question, error) {
 
 	userEntity, err := questionManager.UserRepository.GetUserByName(question.UserName)
-
-	questionEntity := persistence.QuestionEntity{Id: question.Id, Text: question.Text, UserId: userEntity.Id}
+	questionEntity := persistence.QuestionEntity{Id: question.Id, Statement: question.Statement, UserId: userEntity.Id}
 	questionEntity, err = questionManager.QuestionRepository.CreateQuestion(questionEntity)
+
+	if err != nil {
+		fmt.Printf("Error: %s -> %v", "CreateQuestion", err)
+	}
 
 	return question, err
 
 }
 
-func (questionManager *QuestionManager) UpdateQuestion(question Question) {
+func (questionManager *QuestionManager) UpdateQuestion(question Question) (Question, error) {
 
+	questionEntity, err := questionManager.QuestionRepository.GetQuestionById(question.Id)
+
+	isThereAChange := false
+
+	if isThereAChange = question.Answere != questionEntity.Answere; isThereAChange {
+		questionEntity.Answere = question.Answere
+
+		userEntity, _ := questionManager.UserRepository.GetUserByName(question.AnsweredBy)
+		questionEntity.AnsweredBy = userEntity.Id
+	}
+
+	isThereAChange = isThereAChange || question.Statement != questionEntity.Statement
+
+	if isThereAChange {
+		questionEntity, err = questionManager.QuestionRepository.UpdateQuestion(questionEntity)
+	}
+
+	if err != nil {
+		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
+	}
+
+	return question, err
 }
 
 func (questionManager *QuestionManager) DeleteQuestion(id int) {
@@ -101,9 +142,11 @@ func (questionManager *QuestionManager) DeleteQuestion(id int) {
 func createQuestion(questionEntity *persistence.QuestionEntity, userName string) Question {
 
 	result := Question{
-		Id:       questionEntity.Id,
-		Text:     questionEntity.Text,
-		UserName: userName,
+		Id:         questionEntity.Id,
+		Statement:  questionEntity.Statement,
+		UserName:   userName,
+		Answere:    questionEntity.Answere,
+		AnsweredBy: userName,
 	}
 
 	return result
