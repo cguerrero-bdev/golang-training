@@ -79,10 +79,12 @@ func (questionController *QuestionController) CreateQuestion(w http.ResponseWrit
 
 func (questionController *QuestionController) UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var jsonQuestion JsonQuestion
 	json.Unmarshal(reqBody, &jsonQuestion)
-	id, _ := strconv.Atoi(jsonQuestion.Id)
 
 	question := logic.Question{
 		Id:         id,

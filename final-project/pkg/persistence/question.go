@@ -78,7 +78,7 @@ func (questionRepository *QuestionRepository) CreateQuestion(q QuestionEntity) (
 
 func (questionRepository *QuestionRepository) UpdateQuestion(q QuestionEntity) (QuestionEntity, error) {
 
-	s := "update question statement=$1, answer = $2, answered_by = $3 where id = $4"
+	s := "update question set statement=$1, answer = $2, answered_by = $3 where id = $4"
 
 	_, err := questionRepository.Connection.Exec(context.Background(), s, q.Statement, q.Answere, q.AnsweredBy, q.Id)
 

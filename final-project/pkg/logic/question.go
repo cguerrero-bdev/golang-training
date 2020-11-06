@@ -34,7 +34,7 @@ func (questionManager *QuestionManager) GetQuestions() ([]Question, error) {
 	}
 
 	if err != nil {
-		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
+		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
 	}
 
 	return result, err
@@ -61,7 +61,7 @@ func (questionManager *QuestionManager) GetQuestionById(id int) (Question, error
 	}
 
 	if err != nil {
-		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
+		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
 	}
 
 	return result, err
@@ -89,7 +89,7 @@ func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) 
 	}
 
 	if err != nil {
-		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
+		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
 	}
 
 	return result, err
@@ -102,7 +102,7 @@ func (questionManager *QuestionManager) CreateQuestion(question Question) (Quest
 	questionEntity, err = questionManager.QuestionRepository.CreateQuestion(questionEntity)
 
 	if err != nil {
-		fmt.Printf("Error: %s -> %v", "CreateQuestion", err)
+		fmt.Printf("Error: %s -> %v\n", "CreateQuestion", err)
 	}
 
 	return question, err
@@ -113,23 +113,45 @@ func (questionManager *QuestionManager) UpdateQuestion(question Question) (Quest
 
 	questionEntity, err := questionManager.QuestionRepository.GetQuestionById(question.Id)
 
-	isThereAChange := false
+	if err != nil {
+		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
+	}
 
-	if isThereAChange = question.Answere != questionEntity.Answere; isThereAChange {
+	isThereAChange := question.Answere != questionEntity.Answere
+
+	if isThereAChange {
 		questionEntity.Answere = question.Answere
 
-		userEntity, _ := questionManager.UserRepository.GetUserByName(question.AnsweredBy)
+		answeredBy := question.AnsweredBy
+
+		if answeredBy == "" {
+			answeredBy = question.UserName
+		}
+
+		userEntity, err := questionManager.UserRepository.GetUserByName(answeredBy)
+
+		if err != nil {
+			fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
+			return question, err
+		}
+
 		questionEntity.AnsweredBy = userEntity.Id
 	}
 
-	isThereAChange = isThereAChange || question.Statement != questionEntity.Statement
+	if question.Statement != questionEntity.Statement {
+
+		questionEntity.Statement = question.Statement
+		isThereAChange = true
+
+	}
 
 	if isThereAChange {
+
 		questionEntity, err = questionManager.QuestionRepository.UpdateQuestion(questionEntity)
 	}
 
 	if err != nil {
-		fmt.Printf("Error: %s -> %v", "UpdateQuestion", err)
+		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
 	}
 
 	return question, err
