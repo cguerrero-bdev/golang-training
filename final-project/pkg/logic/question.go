@@ -157,8 +157,15 @@ func (questionManager *QuestionManager) UpdateQuestion(question Question) (Quest
 	return question, err
 }
 
-func (questionManager *QuestionManager) DeleteQuestion(id int) {
+func (questionManager *QuestionManager) DeleteQuestion(id int) error {
 
+	err := questionManager.QuestionRepository.DeleteQuestion(id)
+
+	if err != nil {
+		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
+	}
+
+	return err
 }
 
 func createQuestion(questionEntity *persistence.QuestionEntity, userName string) Question {

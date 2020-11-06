@@ -86,7 +86,13 @@ func (questionRepository *QuestionRepository) UpdateQuestion(q QuestionEntity) (
 
 }
 
-func (questionRepository *QuestionRepository) DeleteQuestion(id int) {
+func (questionRepository *QuestionRepository) DeleteQuestion(id int) error {
+
+	s := "delete from question where id = $1"
+
+	_, err := questionRepository.Connection.Exec(context.Background(), s, id)
+
+	return err
 
 }
 

@@ -101,6 +101,10 @@ func (questionController *QuestionController) UpdateQuestion(w http.ResponseWrit
 
 func (questionController *QuestionController) DeleteQuestion(w http.ResponseWriter, r *http.Request) {
 
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
+	questionController.QuestionManager.DeleteQuestion(id)
 }
 
 func createJsonQuestion(question *logic.Question) JsonQuestion {
