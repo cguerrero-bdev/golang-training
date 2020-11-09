@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/pkg/logic"
+	logic "github.com/cguerrero-bdev/golang-training/final-project/businesslogic"
 )
 
 type JsonQuestion struct {

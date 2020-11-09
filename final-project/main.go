@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/pkg/logic"
-	"github.com/cguerrero-bdev/golang-training/final-project/pkg/persistence"
-	"github.com/cguerrero-bdev/golang-training/final-project/pkg/presentation"
+	"github.com/cguerrero-bdev/golang-training/final-project/businesslogic"
+	"github.com/cguerrero-bdev/golang-training/final-project/persistence"
+	"github.com/cguerrero-bdev/golang-training/final-project/presentation"
 	"github.com/gorilla/mux"
 )
 
@@ -21,7 +21,7 @@ func handleRequests() {
 		Connection: connection,
 	}
 
-	questionManager := logic.QuestionManager{
+	questionManager := businesslogic.QuestionManager{
 		QuestionRepository: questionRepository,
 		UserRepository:     userRepository,
 	}

@@ -1,9 +1,9 @@
-package logic
+package businesslogic
 
 import (
 	"fmt"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/pkg/persistence"
+	"github.com/cguerrero-bdev/golang-training/final-project/persistence"
 )
 
 type Question struct {
