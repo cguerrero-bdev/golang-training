@@ -1,9 +1,10 @@
-package businesslogic
+package service
 
 import (
 	"fmt"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/persistence"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/dao"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/util"
 )
 
 type Question struct {
@@ -15,17 +16,13 @@ type Question struct {
 }
 
 type QuestionManager struct {
-	QuestionRepository persistence.QuestionRepository
-	UserRepository     persistence.UserRepository
+	QuestionRepository dao.QuestionDao
+	UserRepository     dao.UserDao
 }
 
-func (questionManager *QuestionManager) GetQuestions() ([]Question, error) {
+func (questionManager *QuestionManager) GetQuestions() ([]Question, *util.ApplicationError) {
 
 	questionEntities, err := questionManager.QuestionRepository.GetQuestions()
-
-	if err != nil {
-		return []Question{}, err
-	}
 
 	result := make([]Question, 0)
 	for _, questionEntity := range questionEntities {
@@ -98,7 +95,7 @@ func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) 
 func (questionManager *QuestionManager) CreateQuestion(question Question) (Question, error) {
 
 	userEntity, err := questionManager.UserRepository.GetUserByName(question.UserName)
-	questionEntity := persistence.QuestionEntity{Id: question.Id, Statement: question.Statement, UserId: userEntity.Id}
+	questionEntity := dao.QuestionEntity{Id: question.Id, Statement: question.Statement, UserId: userEntity.Id}
 	questionEntity, err = questionManager.QuestionRepository.CreateQuestion(questionEntity)
 
 	if err != nil {
@@ -109,13 +106,11 @@ func (questionManager *QuestionManager) CreateQuestion(question Question) (Quest
 
 }
 
-func (questionManager *QuestionManager) UpdateQuestion(question Question) (Question, error) {
+func (questionManager *QuestionManager) UpdateQuestion(question Question) (Question, *util.ApplicationError) {
 
 	questionEntity, err := questionManager.QuestionRepository.GetQuestionById(question.Id)
 
-	if err != nil {
-		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
-	}
+	var applicationError *util.ApplicationError
 
 	isThereAChange := question.Answere != questionEntity.Answere
 
@@ -131,8 +126,8 @@ func (questionManager *QuestionManager) UpdateQuestion(question Question) (Quest
 		userEntity, err := questionManager.UserRepository.GetUserByName(answeredBy)
 
 		if err != nil {
-			fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
-			return question, err
+
+			return question, util.GenerateApplicationError()
 		}
 
 		questionEntity.AnsweredBy = userEntity.Id
@@ -147,14 +142,14 @@ func (questionManager *QuestionManager) UpdateQuestion(question Question) (Quest
 
 	if isThereAChange {
 
-		questionEntity, err = questionManager.QuestionRepository.UpdateQuestion(questionEntity)
+		questionEntity, applicationError = questionManager.QuestionRepository.UpdateQuestion(questionEntity)
 	}
 
 	if err != nil {
-		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
+		util.GenerateApplicationError()
 	}
 
-	return question, err
+	return question, applicationError
 }
 
 func (questionManager *QuestionManager) DeleteQuestion(id int) error {
@@ -168,7 +163,7 @@ func (questionManager *QuestionManager) DeleteQuestion(id int) error {
 	return err
 }
 
-func createQuestion(questionEntity *persistence.QuestionEntity, userName string) Question {
+func createQuestion(questionEntity *dao.QuestionEntity, userName string) Question {
 
 	result := Question{
 		Id:         questionEntity.Id,

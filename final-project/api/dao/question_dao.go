@@ -1,8 +1,9 @@
-package persistence
+package dao
 
 import (
 	"context"
 
+	"github.com/cguerrero-bdev/golang-training/final-project/api/util"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -14,15 +15,20 @@ type QuestionEntity struct {
 	AnsweredBy int
 }
 
-type QuestionRepository struct {
+type QuestionDao struct {
 	Connection *pgx.Conn
 }
 
 const questionSelect = "select id, statement, created_by, answer, answered_by from question "
 
-func (questionRepository *QuestionRepository) GetQuestions() ([]QuestionEntity, error) {
+func (questionDao *QuestionDao) GetQuestions() ([]QuestionEntity, *util.ApplicationError) {
 
-	rows, err := questionRepository.Connection.Query(context.Background(), questionSelect)
+	rows, err := questionDao.Connection.Query(context.Background(), questionSelect)
+
+	if err != nil {
+
+		return nil, util.GenerateApplicationErrorFromError(err)
+	}
 
 	result := make([]QuestionEntity, 0)
 
@@ -33,12 +39,12 @@ func (questionRepository *QuestionRepository) GetQuestions() ([]QuestionEntity, 
 		result = append(result, questionEntity)
 	}
 
-	return result, err
+	return result, nil
 }
 
-func (questionRepository *QuestionRepository) GetQuestionById(id int) (QuestionEntity, error) {
+func (questionDao *QuestionDao) GetQuestionById(id int) (*QuestionEntity, error) {
 
-	row := questionRepository.Connection.QueryRow(context.Background(),
+	row := questionDao.Connection.QueryRow(context.Background(),
 		questionSelect+"where id=$1",
 		id)
 
@@ -46,9 +52,9 @@ func (questionRepository *QuestionRepository) GetQuestionById(id int) (QuestionE
 
 }
 
-func (questionRepository *QuestionRepository) GetQuestionsByUserId(id int) ([]QuestionEntity, error) {
+func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]QuestionEntity, error) {
 
-	rows, err := questionRepository.Connection.Query(context.Background(), questionSelect+"where created_by=$1", id)
+	rows, err := questionDao.Connection.Query(context.Background(), questionSelect+"where created_by=$1", id)
 
 	result := make([]QuestionEntity, 0)
 
@@ -66,31 +72,42 @@ func (questionRepository *QuestionRepository) GetQuestionsByUserId(id int) ([]Qu
 	return result, err
 }
 
-func (questionRepository *QuestionRepository) CreateQuestion(q QuestionEntity) (QuestionEntity, error) {
+func (questionDao *QuestionDao) CreateQuestion(q QuestionEntity) (QuestionEntity, error) {
 
 	s := "insert into question (id,statement,created_by) values($1,$2,$3)"
 
-	_, err := questionRepository.Connection.Exec(context.Background(), s, q.Id, q.Statement, q.UserId)
+	_, err := questionDao.Connection.Exec(context.Background(), s, q.Id, q.Statement, q.UserId)
 
 	return q, err
 
 }
 
-func (questionRepository *QuestionRepository) UpdateQuestion(q QuestionEntity) (QuestionEntity, error) {
+func (questionDao *QuestionDao) UpdateQuestion(q *QuestionEntity) (*QuestionEntity, *util.ApplicationError) {
 
 	s := "update question set statement=$1, answer = $2, answered_by = $3 where id = $4"
 
-	_, err := questionRepository.Connection.Exec(context.Background(), s, q.Statement, q.Answere, q.AnsweredBy, q.Id)
+	answeredBy := &q.AnsweredBy
 
-	return q, err
+	if *answeredBy == 0 {
+		answeredBy = nil
+	}
+
+	_, err := questionDao.Connection.Exec(context.Background(), s, q.Statement, q.Answere, answeredBy, q.Id)
+
+	if err != nil {
+
+		return nil, util.GenerateApplicationErrorFromError(err)
+	}
+
+	return q, nil
 
 }
 
-func (questionRepository *QuestionRepository) DeleteQuestion(id int) error {
+func (questionDao *QuestionDao) DeleteQuestion(id int) error {
 
 	s := "delete from question where id = $1"
 
-	_, err := questionRepository.Connection.Exec(context.Background(), s, id)
+	_, err := questionDao.Connection.Exec(context.Background(), s, id)
 
 	return err
 
@@ -122,9 +139,9 @@ func questionRowsToEntity(rows pgx.Rows) (QuestionEntity, error) {
 	return questionEntity, err
 }
 
-func questionRowToEntity(row pgx.Row) (QuestionEntity, error) {
+func questionRowToEntity(row pgx.Row) (*QuestionEntity, error) {
 
-	questionEntity := QuestionEntity{}
+	questionEntity := &QuestionEntity{}
 
 	var answere *string
 	var answeredBy *int

@@ -1,4 +1,4 @@
-package presentation
+package controller
 
 import (
 	"encoding/json"
@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cguerrero-bdev/golang-training/final-project/api/service"
 	"github.com/gorilla/mux"
-
-	logic "github.com/cguerrero-bdev/golang-training/final-project/businesslogic"
 )
 
 type JsonQuestion struct {
@@ -20,7 +19,7 @@ type JsonQuestion struct {
 }
 
 type QuestionController struct {
-	QuestionManager logic.QuestionManager
+	QuestionManager service.QuestionManager
 }
 
 func (questionController *QuestionController) GetQuestions(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +70,7 @@ func (questionController *QuestionController) CreateQuestion(w http.ResponseWrit
 	var jsonQuestion JsonQuestion
 	json.Unmarshal(reqBody, &jsonQuestion)
 	id, _ := strconv.Atoi(jsonQuestion.Id)
-	question := logic.Question{Id: id, Statement: jsonQuestion.Statement, UserName: jsonQuestion.UserName}
+	question := service.Question{Id: id, Statement: jsonQuestion.Statement, UserName: jsonQuestion.UserName}
 	questionController.QuestionManager.CreateQuestion(question)
 	json.NewEncoder(w).Encode(jsonQuestion)
 
@@ -86,7 +85,7 @@ func (questionController *QuestionController) UpdateQuestion(w http.ResponseWrit
 	var jsonQuestion JsonQuestion
 	json.Unmarshal(reqBody, &jsonQuestion)
 
-	question := logic.Question{
+	question := service.Question{
 		Id:         id,
 		Statement:  jsonQuestion.Statement,
 		UserName:   jsonQuestion.UserName,
@@ -107,7 +106,7 @@ func (questionController *QuestionController) DeleteQuestion(w http.ResponseWrit
 	questionController.QuestionManager.DeleteQuestion(id)
 }
 
-func createJsonQuestion(question *logic.Question) JsonQuestion {
+func createJsonQuestion(question *service.Question) JsonQuestion {
 
 	result := JsonQuestion{
 		Id:         strconv.Itoa(question.Id),

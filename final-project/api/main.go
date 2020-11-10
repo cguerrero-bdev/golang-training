@@ -3,29 +3,29 @@ package main
 import (
 	"net/http"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/businesslogic"
-	"github.com/cguerrero-bdev/golang-training/final-project/persistence"
-	"github.com/cguerrero-bdev/golang-training/final-project/presentation"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/controller"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/dao"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/service"
 	"github.com/gorilla/mux"
 )
 
 func handleRequests() {
 
-	connection := persistence.GetDataBaseConnection()
+	connection := dao.GetDataBaseConnection()
 
-	userRepository := persistence.UserRepository{
+	userRepository := dao.UserDao{
 		Connection: connection,
 	}
 
-	questionRepository := persistence.QuestionRepository{
+	questionRepository := dao.QuestionDao{
 		Connection: connection,
 	}
 
-	questionManager := businesslogic.QuestionManager{
+	questionManager := service.QuestionManager{
 		QuestionRepository: questionRepository,
 		UserRepository:     userRepository,
 	}
-	questionController := presentation.QuestionController{
+	questionController := controller.QuestionController{
 		QuestionManager: questionManager,
 	}
 
