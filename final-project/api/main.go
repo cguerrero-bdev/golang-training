@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/api/controller"
-	"github.com/cguerrero-bdev/golang-training/final-project/api/dao"
-	"github.com/cguerrero-bdev/golang-training/final-project/api/service"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/controller"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/dao"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/service"
 	"github.com/gorilla/mux"
 )
 
@@ -13,20 +13,20 @@ func handleRequests() {
 
 	connection := dao.GetDataBaseConnection()
 
-	userRepository := dao.UserDao{
+	userDao := dao.UserDao{
 		Connection: connection,
 	}
 
-	questionRepository := dao.QuestionDao{
+	questionDao := dao.QuestionDao{
 		Connection: connection,
 	}
 
 	questionManager := service.QuestionManager{
-		QuestionRepository: questionRepository,
-		UserRepository:     userRepository,
+		QuestionDao: &questionDao,
+		UserDao:     &userDao,
 	}
 	questionController := controller.QuestionController{
-		QuestionManager: questionManager,
+		QuestionManager: &questionManager,
 	}
 
 	router := mux.NewRouter().StrictSlash(true)

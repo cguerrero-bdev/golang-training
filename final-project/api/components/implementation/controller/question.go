@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/api/service"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/service"
 	"github.com/gorilla/mux"
 )
 
@@ -16,6 +16,14 @@ type JsonQuestion struct {
 	UserName   string `json:"username"`
 	Answere    string `json:"answer"`
 	AnsweredBy string `json:"answeredby"`
+}
+
+type Question struct {
+	Id         int
+	Statement  string
+	UserName   string
+	Answere    string
+	AnsweredBy string
 }
 
 type QuestionController struct {

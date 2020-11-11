@@ -1,7 +1,7 @@
 FROM golang:latest
 
 
-WORKDIR /build
+WORKDIR .
 
 COPY go.mod .
 COPY go.sum .
