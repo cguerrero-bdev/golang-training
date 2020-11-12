@@ -36,11 +36,11 @@ func (m *MockQuestionDao) EXPECT() *MockQuestionDaoMockRecorder {
 }
 
 // CreateQuestion mocks base method.
-func (m *MockQuestionDao) CreateQuestion(arg0 *dao.QuestionEntity) (*dao.QuestionEntity, error) {
+func (m *MockQuestionDao) CreateQuestion(arg0 *dao.QuestionEntity) (*dao.QuestionEntity, *error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateQuestion", arg0)
 	ret0, _ := ret[0].(*dao.QuestionEntity)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(*error)
 	return ret0, ret1
 }
 
@@ -51,10 +51,10 @@ func (mr *MockQuestionDaoMockRecorder) CreateQuestion(arg0 interface{}) *gomock.
 }
 
 // DeleteQuestion mocks base method.
-func (m *MockQuestionDao) DeleteQuestion(arg0 int) error {
+func (m *MockQuestionDao) DeleteQuestion(arg0 int) *error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteQuestion", arg0)
-	ret0, _ := ret[0].(error)
+	ret0, _ := ret[0].(*error)
 	return ret0
 }
 
@@ -65,11 +65,11 @@ func (mr *MockQuestionDaoMockRecorder) DeleteQuestion(arg0 interface{}) *gomock.
 }
 
 // GetQuestionById mocks base method.
-func (m *MockQuestionDao) GetQuestionById(arg0 int) (*dao.QuestionEntity, error) {
+func (m *MockQuestionDao) GetQuestionById(arg0 int) (*dao.QuestionEntity, *error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetQuestionById", arg0)
 	ret0, _ := ret[0].(*dao.QuestionEntity)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(*error)
 	return ret0, ret1
 }
 
@@ -95,11 +95,11 @@ func (mr *MockQuestionDaoMockRecorder) GetQuestions() *gomock.Call {
 }
 
 // GetQuestionsByUserId mocks base method.
-func (m *MockQuestionDao) GetQuestionsByUserId(arg0 int) ([]dao.QuestionEntity, error) {
+func (m *MockQuestionDao) GetQuestionsByUserId(arg0 int) ([]dao.QuestionEntity, *error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetQuestionsByUserId", arg0)
 	ret0, _ := ret[0].([]dao.QuestionEntity)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(*error)
 	return ret0, ret1
 }
 

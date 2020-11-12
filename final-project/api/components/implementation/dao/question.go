@@ -35,7 +35,7 @@ func (questionDao *QuestionDao) GetQuestions() ([]dao.QuestionEntity, *util.Appl
 	return result, nil
 }
 
-func (questionDao *QuestionDao) GetQuestionById(id int) (*dao.QuestionEntity, error) {
+func (questionDao *QuestionDao) GetQuestionById(id int) (*dao.QuestionEntity, *error) {
 
 	row := questionDao.Connection.QueryRow(context.Background(),
 		questionSelect+"where id=$1",
@@ -45,7 +45,7 @@ func (questionDao *QuestionDao) GetQuestionById(id int) (*dao.QuestionEntity, er
 
 }
 
-func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEntity, error) {
+func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEntity, *error) {
 
 	rows, err := questionDao.Connection.Query(context.Background(), questionSelect+"where created_by=$1", id)
 
@@ -62,16 +62,16 @@ func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEnti
 		result = append(result, questionEntity)
 	}
 
-	return result, err
+	return result, &err
 }
 
-func (questionDao *QuestionDao) CreateQuestion(q *dao.QuestionEntity) (*dao.QuestionEntity, error) {
+func (questionDao *QuestionDao) CreateQuestion(q *dao.QuestionEntity) (*dao.QuestionEntity, *error) {
 
 	s := "insert into question (id,statement,created_by) values($1,$2,$3)"
 
 	_, err := questionDao.Connection.Exec(context.Background(), s, q.Id, q.Statement, q.UserId)
 
-	return q, err
+	return q, &err
 
 }
 
@@ -85,7 +85,7 @@ func (questionDao *QuestionDao) UpdateQuestion(q *dao.QuestionEntity) (*dao.Ques
 		answeredBy = nil
 	}
 
-	_, err := questionDao.Connection.Exec(context.Background(), s, q.Statement, q.Answere, answeredBy, q.Id)
+	_, err := questionDao.Connection.Exec(context.Background(), s, q.Statement, q.Answer, answeredBy, q.Id)
 
 	if err != nil {
 
@@ -96,64 +96,64 @@ func (questionDao *QuestionDao) UpdateQuestion(q *dao.QuestionEntity) (*dao.Ques
 
 }
 
-func (questionDao *QuestionDao) DeleteQuestion(id int) error {
+func (questionDao *QuestionDao) DeleteQuestion(id int) *error {
 
 	s := "delete from question where id = $1"
 
 	_, err := questionDao.Connection.Exec(context.Background(), s, id)
 
-	return err
+	return &err
 
 }
 
-func questionRowsToEntity(rows pgx.Rows) (dao.QuestionEntity, error) {
+func questionRowsToEntity(rows pgx.Rows) (dao.QuestionEntity, *error) {
 
 	questionEntity := dao.QuestionEntity{}
 
-	var answere *string
+	var answer *string
 	var answeredBy *int
 
 	err := rows.Scan(
 		&questionEntity.Id,
 		&questionEntity.Statement,
 		&questionEntity.UserId,
-		&answere,
+		&answer,
 		&answeredBy,
 	)
 
-	if answere != nil {
-		questionEntity.Answere = *answere
+	if answer != nil {
+		questionEntity.Answer = *answer
 	}
 
 	if answeredBy != nil {
 		questionEntity.AnsweredBy = *answeredBy
 	}
 
-	return questionEntity, err
+	return questionEntity, &err
 }
 
-func questionRowToEntity(row pgx.Row) (*dao.QuestionEntity, error) {
+func questionRowToEntity(row pgx.Row) (*dao.QuestionEntity, *error) {
 
 	questionEntity := &dao.QuestionEntity{}
 
-	var answere *string
+	var answer *string
 	var answeredBy *int
 
 	err := row.Scan(
 		&questionEntity.Id,
 		&questionEntity.Statement,
 		&questionEntity.UserId,
-		&answere,
+		&answer,
 		&answeredBy,
 	)
 
-	if answere != nil {
-		questionEntity.Answere = *answere
+	if answer != nil {
+		questionEntity.Answer = *answer
 	}
 
 	if answeredBy != nil {
 		questionEntity.AnsweredBy = *answeredBy
 	}
 
-	return questionEntity, err
+	return questionEntity, &err
 }

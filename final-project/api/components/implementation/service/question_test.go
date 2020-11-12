@@ -12,6 +12,11 @@ import (
 	mockdao "github.com/cguerrero-bdev/golang-training/final-project/api/components/mock/dao"
 )
 
+var userEntity = dao.UserEntity{
+	Id:       2,
+	UserName: "User2",
+}
+
 var questionEntities = []dao.QuestionEntity{
 	{
 		Id: 1, Statement: "Question 1", UserId: 1,
@@ -54,10 +59,6 @@ func TestGetQuestionById(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 
-	userEntity := dao.UserEntity{
-		Id: 2,
-	}
-
 	mockQuestionDao := mockdao.NewMockQuestionDao(controller)
 	mockUserDao := mockdao.NewMockUserDao(controller)
 
@@ -90,11 +91,6 @@ func TestService_CreateQuestion(t *testing.T) {
 		Id: 4, Statement: "Question 4", UserName: "User2",
 	}
 
-	userEntity := dao.UserEntity{
-		Id:       2,
-		UserName: "User2",
-	}
-
 	mockQuestionDao := mockdao.NewMockQuestionDao(controller)
 	mockUserDao := mockdao.NewMockUserDao(controller)
 
@@ -102,18 +98,69 @@ func TestService_CreateQuestion(t *testing.T) {
 		CreateQuestion(&questionEntity).
 		Return(&questionEntity, nil)
 
-	mockUserDao.EXPECT().GetUserByName("User2").Return(userEntity, nil)
+	mockUserDao.EXPECT().GetUserByName("User2").Return(&userEntity, nil)
 
 	questionService := QuestionManager{
 		QuestionDao: mockQuestionDao,
 		UserDao:     mockUserDao,
 	}
 
-	result, error := questionService.CreateQuestion(question)
+	result, error := questionService.CreateQuestion(&question)
 
 	assert := assert.New(t)
 	assert.Nil(error, "Should not return an error")
 	assert.Equal(result.Id, questionEntity.Id, "Id should be equal")
 	assert.Equal(result.Statement, questionEntity.Statement, "Statement should be equal")
+
+}
+
+func TestService_UpdateQuestion(t *testing.T) {
+	controller := gomock.NewController(t)
+	defer controller.Finish()
+
+	questionEntity := dao.QuestionEntity{
+		Id:         3,
+		Statement:  "Question 3",
+		UserId:     2,
+		Answer:     "",
+		AnsweredBy: 0,
+	}
+
+	question := service.Question{
+		Id:         3,
+		Statement:  "Question 3 updated",
+		UserName:   "User2",
+		Answer:     "Answer question 3",
+		AnsweredBy: "User2",
+	}
+
+	userEntity = dao.UserEntity{
+		Id:       2,
+		UserName: "User2",
+	}
+
+	mockQuestionDao := mockdao.NewMockQuestionDao(controller)
+	mockUserDao := mockdao.NewMockUserDao(controller)
+
+	mockUserDao.EXPECT().GetUserByName("User2").Return(&userEntity, nil)
+
+	mockQuestionDao.EXPECT().GetQuestionById(3).Return(&questionEntity, nil)
+
+	mockQuestionDao.EXPECT().
+		UpdateQuestion(&questionEntity).
+		Return(&questionEntity, nil)
+
+	questionService := QuestionManager{
+		QuestionDao: mockQuestionDao,
+		UserDao:     mockUserDao,
+	}
+
+	result, error := questionService.UpdateQuestion(&question)
+
+	assert := assert.New(t)
+	assert.Nil(error, "Should not return an error")
+	assert.Equal(result.Id, question.Id, "Wrong value for 'Id' field")
+	assert.Equal(result.Statement, question.Statement, "Wrong value for 'Statement' field")
+	assert.Equal(result.Answer, question.Answer, "Wrong value for 'Answer' field")
 
 }

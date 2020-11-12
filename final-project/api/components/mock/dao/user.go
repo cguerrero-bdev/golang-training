@@ -35,11 +35,11 @@ func (m *MockUserDao) EXPECT() *MockUserDaoMockRecorder {
 }
 
 // GetUserById mocks base method.
-func (m *MockUserDao) GetUserById(arg0 int) (dao.UserEntity, error) {
+func (m *MockUserDao) GetUserById(arg0 int) (*dao.UserEntity, *error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserById", arg0)
-	ret0, _ := ret[0].(dao.UserEntity)
-	ret1, _ := ret[1].(error)
+	ret0, _ := ret[0].(*dao.UserEntity)
+	ret1, _ := ret[1].(*error)
 	return ret0, ret1
 }
 
@@ -50,11 +50,11 @@ func (mr *MockUserDaoMockRecorder) GetUserById(arg0 interface{}) *gomock.Call {
 }
 
 // GetUserByName mocks base method.
-func (m *MockUserDao) GetUserByName(arg0 string) (dao.UserEntity, error) {
+func (m *MockUserDao) GetUserByName(arg0 string) (*dao.UserEntity, *error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByName", arg0)
-	ret0, _ := ret[0].(dao.UserEntity)
-	ret1, _ := ret[1].(error)
+	ret0, _ := ret[0].(*dao.UserEntity)
+	ret1, _ := ret[1].(*error)
 	return ret0, ret1
 }
 

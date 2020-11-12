@@ -6,6 +6,6 @@ type UserEntity struct {
 }
 
 type UserDao interface {
-	GetUserByName(userName string) (UserEntity, error)
-	GetUserById(id int) (UserEntity, error)
+	GetUserByName(userName string) (*UserEntity, *error)
+	GetUserById(id int) (*UserEntity, *error)
 }
