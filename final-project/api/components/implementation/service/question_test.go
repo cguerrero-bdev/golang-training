@@ -17,19 +17,19 @@ var userEntity = dao.UserEntity{
 	UserName: "User2",
 }
 
-var questionEntities = []dao.QuestionEntity{
-	{
-		Id: 1, Statement: "Question 1", UserId: 1,
-	},
-	{
-		Id: 2, Statement: "Question 2", UserId: 2,
-	},
-	{
-		Id: 3, Statement: "Question 3", UserId: 1,
-	},
-}
-
 func TestGetQuestions(t *testing.T) {
+
+	var questionEntities = []dao.QuestionEntity{
+		{
+			Id: 1, Statement: "Question 1", UserId: 1,
+		},
+		{
+			Id: 2, Statement: "Question 2", UserId: 2,
+		},
+		{
+			Id: 3, Statement: "Question 3", UserId: 1,
+		},
+	}
 
 	controller := gomock.NewController(t)
 	defer controller.Finish()
@@ -56,13 +56,17 @@ func TestGetQuestions(t *testing.T) {
 
 func TestGetQuestionById(t *testing.T) {
 
+	questionEntities := dao.QuestionEntity{
+		Id: 2, Statement: "Question 2", UserId: 2,
+	}
+
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 
 	mockQuestionDao := mockdao.NewMockQuestionDao(controller)
 	mockUserDao := mockdao.NewMockUserDao(controller)
 
-	mockQuestionDao.EXPECT().GetQuestionById(2).Return(&questionEntities[1], nil)
+	mockQuestionDao.EXPECT().GetQuestionById(2).Return(&questionEntities, nil)
 	mockUserDao.EXPECT().GetUserById(2).Return(userEntity, nil)
 
 	questionService := QuestionManager{
@@ -74,8 +78,8 @@ func TestGetQuestionById(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.Nil(error, "Should not return an error")
-	assert.Equal(result.Id, questionEntities[1].Id, "Id should be equal")
-	assert.Equal(result.Statement, questionEntities[1].Statement, "Statement should be equal")
+	assert.Equal(result.Id, questionEntities.Id, "Id should be equal")
+	assert.Equal(result.Statement, questionEntities.Statement, "Statement should be equal")
 
 }
 
@@ -162,5 +166,27 @@ func TestService_UpdateQuestion(t *testing.T) {
 	assert.Equal(result.Id, question.Id, "Wrong value for 'Id' field")
 	assert.Equal(result.Statement, question.Statement, "Wrong value for 'Statement' field")
 	assert.Equal(result.Answer, question.Answer, "Wrong value for 'Answer' field")
+
+}
+
+func TestDeleteQuestion(t *testing.T) {
+
+	controller := gomock.NewController(t)
+	defer controller.Finish()
+
+	mockQuestionDao := mockdao.NewMockQuestionDao(controller)
+	mockUserDao := mockdao.NewMockUserDao(controller)
+
+	mockQuestionDao.EXPECT().DeleteQuestion(1).Return(nil)
+
+	questionService := QuestionManager{
+		QuestionDao: mockQuestionDao,
+		UserDao:     mockUserDao,
+	}
+
+	error := questionService.DeleteQuestion(1)
+
+	assert := assert.New(t)
+	assert.Nil(error, "Should not return an error")
 
 }
