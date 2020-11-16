@@ -6,7 +6,6 @@ import (
 
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/dao"
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/service"
-	"github.com/cguerrero-bdev/golang-training/final-project/api/util"
 )
 
 type QuestionManager struct {
@@ -16,7 +15,7 @@ type QuestionManager struct {
 	ErrorLogger *log.Logger
 }
 
-func (questionManager *QuestionManager) GetQuestions() ([]service.Question, util.ApplicationError) {
+func (questionManager *QuestionManager) GetQuestions() ([]service.Question, error) {
 
 	questionEntities, applicationError := questionManager.QuestionDao.GetQuestions()
 
@@ -33,7 +32,7 @@ func (questionManager *QuestionManager) GetQuestions() ([]service.Question, util
 	return result, nil
 }
 
-func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Question, util.ApplicationError) {
+func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Question, error) {
 
 	questionEntity, applicationError := questionManager.QuestionDao.GetQuestionById(id)
 
@@ -56,7 +55,7 @@ func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Questi
 	return &result, nil
 }
 
-func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) ([]service.Question, util.ApplicationError) {
+func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) ([]service.Question, error) {
 
 	userEntity, applicationError := questionManager.UserDao.GetUserByName(userName)
 
@@ -84,7 +83,7 @@ func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) 
 	return result, err
 }
 
-func (questionManager *QuestionManager) CreateQuestion(question *service.Question) (*service.Question, util.ApplicationError) {
+func (questionManager *QuestionManager) CreateQuestion(question *service.Question) (*service.Question, error) {
 
 	userEntity, applicationError := questionManager.UserDao.GetUserByName(question.UserName)
 
@@ -103,7 +102,7 @@ func (questionManager *QuestionManager) CreateQuestion(question *service.Questio
 
 }
 
-func (questionManager *QuestionManager) UpdateQuestion(question *service.Question) (*service.Question, util.ApplicationError) {
+func (questionManager *QuestionManager) UpdateQuestion(question *service.Question) (*service.Question, error) {
 
 	questionEntity, applicationError := questionManager.QuestionDao.GetQuestionById(question.Id)
 
@@ -152,7 +151,7 @@ func (questionManager *QuestionManager) UpdateQuestion(question *service.Questio
 	return question, applicationError
 }
 
-func (questionManager *QuestionManager) DeleteQuestion(id int) util.ApplicationError {
+func (questionManager *QuestionManager) DeleteQuestion(id int) error {
 
 	applicationError := questionManager.QuestionDao.DeleteQuestion(id)
 

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/controller"
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/dao"
@@ -15,22 +16,20 @@ var (
 	ErrorLogger *log.Logger
 )
 
-func init() {
-
-	InfoLogger = log.New(nil, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	ErrorLogger = log.New(nil, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-}
-
 func handleRequests() {
 
 	connection := dao.GetDataBaseConnection()
 
 	userDao := dao.UserDao{
-		Connection: connection,
+		Connection:  connection,
+		InfoLogger:  InfoLogger,
+		ErrorLogger: ErrorLogger,
 	}
 
 	questionDao := dao.QuestionDao{
-		Connection: connection,
+		Connection:  connection,
+		InfoLogger:  InfoLogger,
+		ErrorLogger: ErrorLogger,
 	}
 
 	questionManager := service.QuestionManager{
@@ -54,6 +53,9 @@ func handleRequests() {
 }
 
 func main() {
+
+	InfoLogger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+	ErrorLogger = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	handleRequests()
 }

@@ -8,7 +8,6 @@ import (
 	reflect "reflect"
 
 	service "github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/service"
-	util "github.com/cguerrero-bdev/golang-training/final-project/api/util"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -80,11 +79,11 @@ func (mr *MockQuestionManagerMockRecorder) GetQuestionById(arg0 interface{}) *go
 }
 
 // GetQuestions mocks base method.
-func (m *MockQuestionManager) GetQuestions() ([]service.Question, *util.ApplicationError) {
+func (m *MockQuestionManager) GetQuestions() ([]service.Question, *error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetQuestions")
 	ret0, _ := ret[0].([]service.Question)
-	ret1, _ := ret[1].(*util.ApplicationError)
+	ret1, _ := ret[1].(*error)
 	return ret0, ret1
 }
 
@@ -110,11 +109,11 @@ func (mr *MockQuestionManagerMockRecorder) GetQuestionsByUserName(arg0 interface
 }
 
 // UpdateQuestion mocks base method.
-func (m *MockQuestionManager) UpdateQuestion(arg0 service.Question) (service.Question, *util.ApplicationError) {
+func (m *MockQuestionManager) UpdateQuestion(arg0 service.Question) (service.Question, *error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateQuestion", arg0)
 	ret0, _ := ret[0].(service.Question)
-	ret1, _ := ret[1].(*util.ApplicationError)
+	ret1, _ := ret[1].(*error)
 	return ret0, ret1
 }
 
