@@ -13,10 +13,10 @@ type QuestionEntity struct {
 }
 
 type QuestionDao interface {
-	GetQuestions() ([]QuestionEntity, *util.ApplicationError)
-	GetQuestionById(id int) (*QuestionEntity, *error)
-	CreateQuestion(q *QuestionEntity) (*QuestionEntity, *error)
-	GetQuestionsByUserId(id int) ([]QuestionEntity, *error)
-	UpdateQuestion(q *QuestionEntity) (*QuestionEntity, *util.ApplicationError)
-	DeleteQuestion(id int) *error
+	GetQuestions() ([]QuestionEntity, util.ApplicationError)
+	GetQuestionById(id int) (*QuestionEntity, util.ApplicationError)
+	CreateQuestion(q *QuestionEntity) (*QuestionEntity, util.ApplicationError)
+	GetQuestionsByUserId(id int) ([]QuestionEntity, util.ApplicationError)
+	UpdateQuestion(q *QuestionEntity) (*QuestionEntity, util.ApplicationError)
+	DeleteQuestion(id int) util.ApplicationError
 }

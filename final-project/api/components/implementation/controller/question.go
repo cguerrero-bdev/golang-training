@@ -14,7 +14,7 @@ type JsonQuestion struct {
 	Id         string `json:"id"`
 	Statement  string `json:"statement"`
 	UserName   string `json:"username"`
-	Answere    string `json:"answer"`
+	Answer     string `json:"answer"`
 	AnsweredBy string `json:"answeredby"`
 }
 
@@ -22,7 +22,7 @@ type Question struct {
 	Id         int
 	Statement  string
 	UserName   string
-	Answere    string
+	Answer     string
 	AnsweredBy string
 }
 
@@ -50,7 +50,7 @@ func (questionController *QuestionController) GetQuestionById(w http.ResponseWri
 
 	question, _ := questionController.QuestionManager.GetQuestionById(id)
 
-	result := createJsonQuestion(&question)
+	result := createJsonQuestion(question)
 
 	json.NewEncoder(w).Encode(result)
 
@@ -79,7 +79,7 @@ func (questionController *QuestionController) CreateQuestion(w http.ResponseWrit
 	json.Unmarshal(reqBody, &jsonQuestion)
 	id, _ := strconv.Atoi(jsonQuestion.Id)
 	question := service.Question{Id: id, Statement: jsonQuestion.Statement, UserName: jsonQuestion.UserName}
-	questionController.QuestionManager.CreateQuestion(question)
+	questionController.QuestionManager.CreateQuestion(&question)
 	json.NewEncoder(w).Encode(jsonQuestion)
 
 }
@@ -97,11 +97,11 @@ func (questionController *QuestionController) UpdateQuestion(w http.ResponseWrit
 		Id:         id,
 		Statement:  jsonQuestion.Statement,
 		UserName:   jsonQuestion.UserName,
-		Answere:    jsonQuestion.Answere,
+		Answer:     jsonQuestion.Answer,
 		AnsweredBy: jsonQuestion.AnsweredBy,
 	}
 
-	questionController.QuestionManager.UpdateQuestion(question)
+	questionController.QuestionManager.UpdateQuestion(&question)
 	json.NewEncoder(w).Encode(jsonQuestion)
 
 }
@@ -120,7 +120,7 @@ func createJsonQuestion(question *service.Question) JsonQuestion {
 		Id:         strconv.Itoa(question.Id),
 		Statement:  question.Statement,
 		UserName:   question.UserName,
-		Answere:    question.Answere,
+		Answer:     question.Answer,
 		AnsweredBy: question.AnsweredBy,
 	}
 

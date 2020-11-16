@@ -35,11 +35,13 @@ func TestGetQuestions(t *testing.T) {
 	defer controller.Finish()
 
 	mockQuestionDao := mockdao.NewMockQuestionDao(controller)
+	mockUserDao := mockdao.NewMockUserDao(controller)
 
 	mockQuestionDao.EXPECT().GetQuestions().Return(questionEntities, nil)
 
 	questionService := QuestionManager{
 		QuestionDao: mockQuestionDao,
+		UserDao:     mockUserDao,
 	}
 
 	result, error := questionService.GetQuestions()

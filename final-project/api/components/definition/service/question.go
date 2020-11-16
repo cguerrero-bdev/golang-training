@@ -11,10 +11,10 @@ type Question struct {
 }
 
 type QuestionManager interface {
-	GetQuestions() ([]Question, *util.ApplicationError)
-	GetQuestionById(id int) (*Question, *error)
-	GetQuestionsByUserName(userName string) ([]Question, *error)
-	CreateQuestion(question *Question) (*Question, *error)
-	UpdateQuestion(question *Question) (*Question, *util.ApplicationError)
-	DeleteQuestion(id int) error
+	GetQuestions() ([]Question, util.ApplicationError)
+	GetQuestionById(id int) (*Question, util.ApplicationError)
+	GetQuestionsByUserName(userName string) ([]Question, util.ApplicationError)
+	CreateQuestion(question *Question) (*Question, util.ApplicationError)
+	UpdateQuestion(question *Question) (*Question, util.ApplicationError)
+	DeleteQuestion(id int) util.ApplicationError
 }

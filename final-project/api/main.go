@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/controller"
@@ -8,6 +9,17 @@ import (
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/service"
 	"github.com/gorilla/mux"
 )
+
+var (
+	InfoLogger  *log.Logger
+	ErrorLogger *log.Logger
+)
+
+func init() {
+
+	InfoLogger = log.New(nil, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+	ErrorLogger = log.New(nil, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+}
 
 func handleRequests() {
 

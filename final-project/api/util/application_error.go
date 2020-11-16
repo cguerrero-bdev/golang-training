@@ -1,34 +1,37 @@
 package util
 
 import (
-	"fmt"
-	"runtime"
+	"log"
 )
 
-type ApplicationError struct {
-	Code, Message string
+type ApplicationError interface {
+	Code() string
+	Message() string
 }
 
-func GenerateApplicationErrorFromError(err error) *ApplicationError {
-
-	fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
-
-	pc := make([]uintptr, 10)
-	runtime.Callers(2, pc)
-	f := runtime.FuncForPC(pc[0])
-	file, line := f.FileLine(pc[0])
-	fmt.Printf("%s:%d %s \n %v\n", file, line, f.Name(), pc)
-
-	return &ApplicationError{}
+type ApplicationErrorImp struct {
+	code    string
+	message string
 }
 
-func GenerateApplicationError() *ApplicationError {
+func (applicationErrorImp *ApplicationErrorImp) Code() string {
+	return applicationErrorImp.code
+}
 
-	pc := make([]uintptr, 10)
-	runtime.Callers(2, pc)
-	f := runtime.FuncForPC(pc[0])
-	file, line := f.FileLine(pc[0])
-	fmt.Printf("%s:%d %s \n %v\n", file, line, f.Name(), pc)
+func (applicationErrorImp *ApplicationErrorImp) Message() string {
+	return applicationErrorImp.message
+}
 
-	return &ApplicationError{}
+const UNKNOWN_ERROR = "UNKNOWN_ERROR"
+
+var UnknownError = ApplicationErrorImp{
+	code:    UNKNOWN_ERROR,
+	message: "Unknown Error",
+}
+
+func GenerateApplicationUnknownError(err error, errorLogger *log.Logger) ApplicationError {
+
+	errorLogger.Println(err.Error())
+
+	return &UnknownError
 }

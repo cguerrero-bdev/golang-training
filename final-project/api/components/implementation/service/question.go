@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/dao"
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/service"
@@ -11,11 +12,17 @@ import (
 type QuestionManager struct {
 	QuestionDao dao.QuestionDao
 	UserDao     dao.UserDao
+	InfoLogger  *log.Logger
+	ErrorLogger *log.Logger
 }
 
-func (questionManager *QuestionManager) GetQuestions() ([]service.Question, *util.ApplicationError) {
+func (questionManager *QuestionManager) GetQuestions() ([]service.Question, util.ApplicationError) {
 
-	questionEntities, err := questionManager.QuestionDao.GetQuestions()
+	questionEntities, applicationError := questionManager.QuestionDao.GetQuestions()
+
+	if applicationError != nil {
+		return nil, applicationError
+	}
 
 	result := make([]service.Question, 0)
 	for _, questionEntity := range questionEntities {
@@ -23,25 +30,21 @@ func (questionManager *QuestionManager) GetQuestions() ([]service.Question, *uti
 
 	}
 
-	if err != nil {
-		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
-	}
-
-	return result, err
+	return result, nil
 }
 
-func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Question, *error) {
+func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Question, util.ApplicationError) {
 
-	questionEntity, err := questionManager.QuestionDao.GetQuestionById(id)
+	questionEntity, applicationError := questionManager.QuestionDao.GetQuestionById(id)
 
-	if err != nil {
-		return nil, err
+	if applicationError != nil {
+		return nil, applicationError
 	}
 
-	userEntity, err := questionManager.UserDao.GetUserById(questionEntity.Id)
+	userEntity, applicationError := questionManager.UserDao.GetUserById(questionEntity.Id)
 
-	if err != nil {
-		return nil, err
+	if applicationError != nil {
+		return nil, applicationError
 	}
 
 	result := service.Question{
@@ -50,20 +53,16 @@ func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Questi
 		UserName:  userEntity.UserName,
 	}
 
-	if err != nil {
-		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
-	}
-
-	return &result, err
+	return &result, nil
 }
 
-func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) ([]service.Question, *error) {
+func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) ([]service.Question, util.ApplicationError) {
 
-	userEntity, err := questionManager.UserDao.GetUserByName(userName)
+	userEntity, applicationError := questionManager.UserDao.GetUserByName(userName)
 
-	if err != nil {
+	if applicationError != nil {
 
-		return []service.Question{}, err
+		return nil, applicationError
 	}
 
 	questionEntities, err := questionManager.QuestionDao.GetQuestionsByUserId(userEntity.Id)
@@ -85,25 +84,33 @@ func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) 
 	return result, err
 }
 
-func (questionManager *QuestionManager) CreateQuestion(question *service.Question) (*service.Question, *error) {
+func (questionManager *QuestionManager) CreateQuestion(question *service.Question) (*service.Question, util.ApplicationError) {
 
-	userEntity, err := questionManager.UserDao.GetUserByName(question.UserName)
-	questionEntity := &dao.QuestionEntity{Id: question.Id, Statement: question.Statement, UserId: userEntity.Id}
-	questionEntity, err = questionManager.QuestionDao.CreateQuestion(questionEntity)
+	userEntity, applicationError := questionManager.UserDao.GetUserByName(question.UserName)
 
-	if err != nil {
-		fmt.Printf("Error: %s -> %v\n", "CreateQuestion", err)
+	if applicationError != nil {
+		return nil, applicationError
 	}
 
-	return question, err
+	questionEntity := &dao.QuestionEntity{Id: question.Id, Statement: question.Statement, UserId: userEntity.Id}
+	questionEntity, applicationError = questionManager.QuestionDao.CreateQuestion(questionEntity)
+
+	if applicationError != nil {
+		return nil, applicationError
+	}
+
+	return question, nil
 
 }
 
-func (questionManager *QuestionManager) UpdateQuestion(question *service.Question) (*service.Question, *util.ApplicationError) {
+func (questionManager *QuestionManager) UpdateQuestion(question *service.Question) (*service.Question, util.ApplicationError) {
 
-	questionEntity, err := questionManager.QuestionDao.GetQuestionById(question.Id)
+	questionEntity, applicationError := questionManager.QuestionDao.GetQuestionById(question.Id)
 
-	var applicationError *util.ApplicationError
+	if applicationError != nil {
+
+		return question, applicationError
+	}
 
 	isThereAChange := question.Answer != questionEntity.Answer
 
@@ -116,11 +123,11 @@ func (questionManager *QuestionManager) UpdateQuestion(question *service.Questio
 			answeredBy = question.UserName
 		}
 
-		userEntity, err := questionManager.UserDao.GetUserByName(answeredBy)
+		userEntity, applicationError := questionManager.UserDao.GetUserByName(answeredBy)
 
-		if err != nil {
+		if applicationError != nil {
 
-			return question, util.GenerateApplicationError()
+			return question, applicationError
 		}
 
 		questionEntity.AnsweredBy = userEntity.Id
@@ -138,22 +145,22 @@ func (questionManager *QuestionManager) UpdateQuestion(question *service.Questio
 		questionEntity, applicationError = questionManager.QuestionDao.UpdateQuestion(questionEntity)
 	}
 
-	if err != nil {
-		util.GenerateApplicationError()
+	if applicationError != nil {
+		return nil, applicationError
 	}
 
 	return question, applicationError
 }
 
-func (questionManager *QuestionManager) DeleteQuestion(id int) *error {
+func (questionManager *QuestionManager) DeleteQuestion(id int) util.ApplicationError {
 
-	err := questionManager.QuestionDao.DeleteQuestion(id)
+	applicationError := questionManager.QuestionDao.DeleteQuestion(id)
 
-	if err != nil {
-		fmt.Printf("Error: %s -> %v\n", "UpdateQuestion", err)
+	if applicationError != nil {
+		return applicationError
 	}
 
-	return err
+	return nil
 }
 
 func createQuestion(questionEntity *dao.QuestionEntity, userName string) service.Question {

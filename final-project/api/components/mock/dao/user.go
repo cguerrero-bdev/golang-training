@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	dao "github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/dao"
+	util "github.com/cguerrero-bdev/golang-training/final-project/api/util"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,11 +36,11 @@ func (m *MockUserDao) EXPECT() *MockUserDaoMockRecorder {
 }
 
 // GetUserById mocks base method.
-func (m *MockUserDao) GetUserById(arg0 int) (*dao.UserEntity, *error) {
+func (m *MockUserDao) GetUserById(arg0 int) (*dao.UserEntity, util.ApplicationError) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserById", arg0)
 	ret0, _ := ret[0].(*dao.UserEntity)
-	ret1, _ := ret[1].(*error)
+	ret1, _ := ret[1].(util.ApplicationError)
 	return ret0, ret1
 }
 
@@ -50,11 +51,11 @@ func (mr *MockUserDaoMockRecorder) GetUserById(arg0 interface{}) *gomock.Call {
 }
 
 // GetUserByName mocks base method.
-func (m *MockUserDao) GetUserByName(arg0 string) (*dao.UserEntity, *error) {
+func (m *MockUserDao) GetUserByName(arg0 string) (*dao.UserEntity, util.ApplicationError) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByName", arg0)
 	ret0, _ := ret[0].(*dao.UserEntity)
-	ret1, _ := ret[1].(*error)
+	ret1, _ := ret[1].(util.ApplicationError)
 	return ret0, ret1
 }
 
