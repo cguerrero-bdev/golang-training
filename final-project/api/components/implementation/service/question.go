@@ -17,10 +17,10 @@ type QuestionManager struct {
 
 func (questionManager *QuestionManager) GetQuestions() ([]service.Question, error) {
 
-	questionEntities, applicationError := questionManager.QuestionDao.GetQuestions()
+	questionEntities, error := questionManager.QuestionDao.GetQuestions()
 
-	if applicationError != nil {
-		return nil, applicationError
+	if error != nil {
+		return nil, error
 	}
 
 	result := make([]service.Question, 0)
@@ -34,16 +34,16 @@ func (questionManager *QuestionManager) GetQuestions() ([]service.Question, erro
 
 func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Question, error) {
 
-	questionEntity, applicationError := questionManager.QuestionDao.GetQuestionById(id)
+	questionEntity, error := questionManager.QuestionDao.GetQuestionById(id)
 
-	if applicationError != nil {
-		return nil, applicationError
+	if error != nil {
+		return nil, error
 	}
 
-	userEntity, applicationError := questionManager.UserDao.GetUserById(questionEntity.Id)
+	userEntity, error := questionManager.UserDao.GetUserById(questionEntity.UserId)
 
-	if applicationError != nil {
-		return nil, applicationError
+	if error != nil {
+		return nil, error
 	}
 
 	result := service.Question{
@@ -57,11 +57,11 @@ func (questionManager *QuestionManager) GetQuestionById(id int) (*service.Questi
 
 func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) ([]service.Question, error) {
 
-	userEntity, applicationError := questionManager.UserDao.GetUserByName(userName)
+	userEntity, error := questionManager.UserDao.GetUserByName(userName)
 
-	if applicationError != nil {
+	if error != nil {
 
-		return nil, applicationError
+		return nil, error
 	}
 
 	questionEntities, err := questionManager.QuestionDao.GetQuestionsByUserId(userEntity.Id)
@@ -85,17 +85,17 @@ func (questionManager *QuestionManager) GetQuestionsByUserName(userName string) 
 
 func (questionManager *QuestionManager) CreateQuestion(question *service.Question) (*service.Question, error) {
 
-	userEntity, applicationError := questionManager.UserDao.GetUserByName(question.UserName)
+	userEntity, error := questionManager.UserDao.GetUserByName(question.UserName)
 
-	if applicationError != nil {
-		return nil, applicationError
+	if error != nil {
+		return nil, error
 	}
 
 	questionEntity := &dao.QuestionEntity{Id: question.Id, Statement: question.Statement, UserId: userEntity.Id}
-	questionEntity, applicationError = questionManager.QuestionDao.CreateQuestion(questionEntity)
+	questionEntity, error = questionManager.QuestionDao.CreateQuestion(questionEntity)
 
-	if applicationError != nil {
-		return nil, applicationError
+	if error != nil {
+		return nil, error
 	}
 
 	return question, nil
@@ -104,11 +104,11 @@ func (questionManager *QuestionManager) CreateQuestion(question *service.Questio
 
 func (questionManager *QuestionManager) UpdateQuestion(question *service.Question) (*service.Question, error) {
 
-	questionEntity, applicationError := questionManager.QuestionDao.GetQuestionById(question.Id)
+	questionEntity, error := questionManager.QuestionDao.GetQuestionById(question.Id)
 
-	if applicationError != nil {
+	if error != nil {
 
-		return question, applicationError
+		return question, error
 	}
 
 	isThereAChange := question.Answer != questionEntity.Answer
@@ -122,11 +122,11 @@ func (questionManager *QuestionManager) UpdateQuestion(question *service.Questio
 			answeredBy = question.UserName
 		}
 
-		userEntity, applicationError := questionManager.UserDao.GetUserByName(answeredBy)
+		userEntity, error := questionManager.UserDao.GetUserByName(answeredBy)
 
-		if applicationError != nil {
+		if error != nil {
 
-			return question, applicationError
+			return question, error
 		}
 
 		questionEntity.AnsweredBy = userEntity.Id
@@ -141,22 +141,22 @@ func (questionManager *QuestionManager) UpdateQuestion(question *service.Questio
 
 	if isThereAChange {
 
-		questionEntity, applicationError = questionManager.QuestionDao.UpdateQuestion(questionEntity)
+		questionEntity, error = questionManager.QuestionDao.UpdateQuestion(questionEntity)
 	}
 
-	if applicationError != nil {
-		return nil, applicationError
+	if error != nil {
+		return nil, error
 	}
 
-	return question, applicationError
+	return question, error
 }
 
 func (questionManager *QuestionManager) DeleteQuestion(id int) error {
 
-	applicationError := questionManager.QuestionDao.DeleteQuestion(id)
+	error := questionManager.QuestionDao.DeleteQuestion(id)
 
-	if applicationError != nil {
-		return applicationError
+	if error != nil {
+		return error
 	}
 
 	return nil

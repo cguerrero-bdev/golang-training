@@ -36,6 +36,7 @@ github.com/cguerrero-bdev/golang-training v0.0.0-20201109045716-a99722c40452 h1:
 github.com/cguerrero-bdev/golang-training v0.0.0-20201110151247-0a4892b5e5c1 h1:+AS7dFYfH/XqWlzRx2i2h+Dw9S/CgviMuBUywE5Kr1U=
 github.com/cguerrero-bdev/golang-training v0.0.0-20201111153744-8c746b0bd1f8 h1:viJMqliZlWMmgk5IVzRy2qVYtxIbTZ0y3/80yJwWoy4=
 github.com/cguerrero-bdev/golang-training v0.0.0-20201116103301-e75504c1a7bc h1:Qda9tCX/uN8DVT9qhHkIxEkCq93qaUvVi2K9HQzZxPs=
+github.com/cguerrero-bdev/golang-training v0.0.0-20201116231744-7ed743880cc3 h1:mMjZC6UKpetosQBZE0kzN2Q5gmKyoe4Zk/NePzzn1aQ=
 github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec/go.mod h1:jMjuTZXRI4dUb/I5gc9Hdhagfvm9+RyrPryS/auMzxE=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMeY4+DwBQ=

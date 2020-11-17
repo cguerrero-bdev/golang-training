@@ -6,25 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/controller"
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/service"
 	"github.com/gorilla/mux"
 )
-
-type JsonQuestion struct {
-	Id         string `json:"id"`
-	Statement  string `json:"statement"`
-	UserName   string `json:"username"`
-	Answer     string `json:"answer"`
-	AnsweredBy string `json:"answeredby"`
-}
-
-type Question struct {
-	Id         int
-	Statement  string
-	UserName   string
-	Answer     string
-	AnsweredBy string
-}
 
 type QuestionController struct {
 	QuestionManager service.QuestionManager
@@ -34,7 +19,7 @@ func (questionController *QuestionController) GetQuestions(w http.ResponseWriter
 
 	questions, _ := questionController.QuestionManager.GetQuestions()
 
-	result := make([]JsonQuestion, 0)
+	result := make([]controller.JsonQuestion, 0)
 	for _, question := range questions {
 		result = append(result, createJsonQuestion(&question))
 	}
@@ -63,7 +48,7 @@ func (questionController *QuestionController) GetQuestionsByUserName(w http.Resp
 
 	questions, _ := questionController.QuestionManager.GetQuestionsByUserName(userName)
 
-	result := make([]JsonQuestion, 0)
+	result := make([]controller.JsonQuestion, 0)
 	for _, question := range questions {
 		result = append(result, createJsonQuestion(&question))
 	}
@@ -75,7 +60,7 @@ func (questionController *QuestionController) GetQuestionsByUserName(w http.Resp
 func (questionController *QuestionController) CreateQuestion(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, _ := ioutil.ReadAll(r.Body)
-	var jsonQuestion JsonQuestion
+	var jsonQuestion controller.JsonQuestion
 	json.Unmarshal(reqBody, &jsonQuestion)
 	id, _ := strconv.Atoi(jsonQuestion.Id)
 	question := service.Question{Id: id, Statement: jsonQuestion.Statement, UserName: jsonQuestion.UserName}
@@ -90,7 +75,7 @@ func (questionController *QuestionController) UpdateQuestion(w http.ResponseWrit
 	id, _ := strconv.Atoi(vars["id"])
 
 	reqBody, _ := ioutil.ReadAll(r.Body)
-	var jsonQuestion JsonQuestion
+	var jsonQuestion controller.JsonQuestion
 	json.Unmarshal(reqBody, &jsonQuestion)
 
 	question := service.Question{
@@ -114,9 +99,9 @@ func (questionController *QuestionController) DeleteQuestion(w http.ResponseWrit
 	questionController.QuestionManager.DeleteQuestion(id)
 }
 
-func createJsonQuestion(question *service.Question) JsonQuestion {
+func createJsonQuestion(question *service.Question) controller.JsonQuestion {
 
-	result := JsonQuestion{
+	result := controller.JsonQuestion{
 		Id:         strconv.Itoa(question.Id),
 		Statement:  question.Statement,
 		UserName:   question.UserName,
