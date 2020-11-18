@@ -16,7 +16,6 @@ type QuestionController struct {
 }
 
 func (questionController *QuestionController) GetQuestions(w http.ResponseWriter, r *http.Request) {
-
 	questions, _ := questionController.QuestionManager.GetQuestions()
 
 	result := make([]controller.JsonQuestion, 0)
@@ -25,11 +24,9 @@ func (questionController *QuestionController) GetQuestions(w http.ResponseWriter
 	}
 
 	json.NewEncoder(w).Encode(result)
-
 }
 
 func (questionController *QuestionController) GetQuestionById(w http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
@@ -38,11 +35,9 @@ func (questionController *QuestionController) GetQuestionById(w http.ResponseWri
 	result := createJsonQuestion(question)
 
 	json.NewEncoder(w).Encode(result)
-
 }
 
 func (questionController *QuestionController) GetQuestionsByUserName(w http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	userName, _ := vars["userName"]
 
@@ -54,11 +49,9 @@ func (questionController *QuestionController) GetQuestionsByUserName(w http.Resp
 	}
 
 	json.NewEncoder(w).Encode(result)
-
 }
 
 func (questionController *QuestionController) CreateQuestion(w http.ResponseWriter, r *http.Request) {
-
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var jsonQuestion controller.JsonQuestion
 	json.Unmarshal(reqBody, &jsonQuestion)
@@ -66,11 +59,9 @@ func (questionController *QuestionController) CreateQuestion(w http.ResponseWrit
 	question := service.Question{Id: id, Statement: jsonQuestion.Statement, UserName: jsonQuestion.UserName}
 	questionController.QuestionManager.CreateQuestion(&question)
 	json.NewEncoder(w).Encode(jsonQuestion)
-
 }
 
 func (questionController *QuestionController) UpdateQuestion(w http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
@@ -88,11 +79,9 @@ func (questionController *QuestionController) UpdateQuestion(w http.ResponseWrit
 
 	questionController.QuestionManager.UpdateQuestion(&question)
 	json.NewEncoder(w).Encode(jsonQuestion)
-
 }
 
 func (questionController *QuestionController) DeleteQuestion(w http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
@@ -100,7 +89,6 @@ func (questionController *QuestionController) DeleteQuestion(w http.ResponseWrit
 }
 
 func createJsonQuestion(question *service.Question) controller.JsonQuestion {
-
 	result := controller.JsonQuestion{
 		Id:         strconv.Itoa(question.Id),
 		Statement:  question.Statement,

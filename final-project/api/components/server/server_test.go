@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/controller"
@@ -17,7 +18,6 @@ import (
 )
 
 func TestGetQuestions(t *testing.T) {
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -41,21 +41,23 @@ func TestGetQuestions(t *testing.T) {
 		},
 	}
 
-	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
-
-	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
-
 	request, err := http.NewRequest("GET", "/questions", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	response := httptest.NewRecorder()
-	json.NewEncoder(response).Encode(want)
+	err = json.NewEncoder(response).Encode(want)
+	if err != nil {
+		t.Fatal(err)
+	}
 
+	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
 	mockQuestionController.EXPECT().
 		GetQuestions(response, request).
 		Return()
+
+	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
 
 	handler := http.HandlerFunc(server.GetQuestions)
 
@@ -69,22 +71,11 @@ func TestGetQuestions(t *testing.T) {
 
 	result := []controller.JsonQuestion{}
 	err = json.Unmarshal(body, &result)
-
 	assert.NoError(t, err)
-	assert.Len(t, result, len(want))
-
-	for i, _ := range want {
-
-		assert.Equal(t, want[i].Id, result[i].Id)
-		assert.Equal(t, want[i].Statement, result[i].Statement)
-		assert.Equal(t, want[i].Answer, result[i].Answer)
-
-	}
-
+	assert.True(t, reflect.DeepEqual(result, want))
 }
 
 func TestGetQuestionById(t *testing.T) {
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -92,17 +83,12 @@ func TestGetQuestionById(t *testing.T) {
 	ErrorLogger := log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	want := controller.JsonQuestion{
-
 		Id:         "3",
 		Statement:  "Question3",
 		UserName:   "user1",
 		Answer:     "answere 3",
 		AnsweredBy: "user2",
 	}
-
-	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
-
-	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
 
 	request, err := http.NewRequest("GET", "/questions/3", nil)
 	if err != nil {
@@ -112,12 +98,14 @@ func TestGetQuestionById(t *testing.T) {
 	response := httptest.NewRecorder()
 	json.NewEncoder(response).Encode(want)
 
+	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
 	mockQuestionController.EXPECT().
 		GetQuestionById(response, request).
 		Return()
 
-	handler := http.HandlerFunc(server.GetQuestionById)
+	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
 
+	handler := http.HandlerFunc(server.GetQuestionById)
 	handler.ServeHTTP(response, request)
 
 	resp := response.Result()
@@ -128,16 +116,11 @@ func TestGetQuestionById(t *testing.T) {
 
 	result := controller.JsonQuestion{}
 	err = json.Unmarshal(body, &result)
-
 	assert.NoError(t, err)
-	assert.Equal(t, want.Id, result.Id)
-	assert.Equal(t, want.Statement, result.Statement)
-	assert.Equal(t, want.Answer, result.Answer)
-
+	assert.True(t, reflect.DeepEqual(result, want))
 }
 
 func TestCreateQuestion(t *testing.T) {
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -150,34 +133,32 @@ func TestCreateQuestion(t *testing.T) {
 		UserName:  "user1",
 	}
 
-	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
-
-	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
-
 	response := httptest.NewRecorder()
-	q, _ := json.Marshal(question)
+	q, err := json.Marshal(question)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	request, err := http.NewRequest("POST", "/questions", bytes.NewReader(q))
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
 	mockQuestionController.EXPECT().
 		CreateQuestion(response, request).
 		Return()
 
-	handler := http.HandlerFunc(server.CreateQuestion)
+	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
 
+	handler := http.HandlerFunc(server.CreateQuestion)
 	handler.ServeHTTP(response, request)
 
 	resp := response.Result()
-
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
 }
 
 func TestUpdateQuestion(t *testing.T) {
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -190,34 +171,32 @@ func TestUpdateQuestion(t *testing.T) {
 		UserName:  "user1",
 	}
 
-	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
-
-	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
-
 	response := httptest.NewRecorder()
-	q, _ := json.Marshal(question)
+	q, err := json.Marshal(question)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	request, err := http.NewRequest("PUT", "/questions/4", bytes.NewReader(q))
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
 	mockQuestionController.EXPECT().
 		UpdateQuestion(response, request).
 		Return()
 
-	handler := http.HandlerFunc(server.UpdateQuestion)
+	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
 
+	handler := http.HandlerFunc(server.UpdateQuestion)
 	handler.ServeHTTP(response, request)
 
 	resp := response.Result()
-
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
 }
 
 func TestDeleteQuestion(t *testing.T) {
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -230,28 +209,28 @@ func TestDeleteQuestion(t *testing.T) {
 		UserName:  "user1",
 	}
 
-	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
-
-	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
-
 	response := httptest.NewRecorder()
-	q, _ := json.Marshal(question)
+	q, err := json.Marshal(question)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	request, err := http.NewRequest("PUT", "/questions/4", bytes.NewReader(q))
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
 	mockQuestionController.EXPECT().
 		DeleteQuestion(response, request).
 		Return()
 
-	handler := http.HandlerFunc(server.DeleteQuestion)
+	server := NewServer(mockQuestionController, "3000", InfoLogger, ErrorLogger)
 
+	handler := http.HandlerFunc(server.DeleteQuestion)
 	handler.ServeHTTP(response, request)
 
 	resp := response.Result()
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
 }

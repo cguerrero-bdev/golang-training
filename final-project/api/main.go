@@ -20,7 +20,7 @@ func main() {
 	InfoLogger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	server := server.NewServer(getQuestionController(), "3000", InfoLogger, ErrorLogger)
+	server := server.NewServer(getQuestionController(), "8080", InfoLogger, ErrorLogger)
 	server.HandleRequests()
 }
 

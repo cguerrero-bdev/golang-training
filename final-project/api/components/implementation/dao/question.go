@@ -18,7 +18,6 @@ type QuestionDao struct {
 const questionSelect = "select id, statement, created_by, answer, answered_by from question "
 
 func (questionDao *QuestionDao) GetQuestions() ([]dao.QuestionEntity, error) {
-
 	rows, err := questionDao.Connection.Query(context.Background(), questionSelect)
 
 	if err != nil {
@@ -43,7 +42,6 @@ func (questionDao *QuestionDao) GetQuestions() ([]dao.QuestionEntity, error) {
 }
 
 func (questionDao *QuestionDao) GetQuestionById(id int) (*dao.QuestionEntity, error) {
-
 	row := questionDao.Connection.QueryRow(context.Background(),
 		questionSelect+"where id=$1",
 		id)
@@ -59,7 +57,6 @@ func (questionDao *QuestionDao) GetQuestionById(id int) (*dao.QuestionEntity, er
 }
 
 func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEntity, error) {
-
 	rows, err := questionDao.Connection.Query(context.Background(), questionSelect+"where created_by=$1", id)
 	if err != nil {
 		questionDao.ErrorLogger.Println(err.Error())
@@ -83,7 +80,6 @@ func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEnti
 }
 
 func (questionDao *QuestionDao) CreateQuestion(q *dao.QuestionEntity) (*dao.QuestionEntity, error) {
-
 	s := "insert into question (id,statement,created_by) values($1,$2,$3)"
 
 	_, err := questionDao.Connection.Exec(context.Background(), s, q.Id, q.Statement, q.UserId)
@@ -98,7 +94,6 @@ func (questionDao *QuestionDao) CreateQuestion(q *dao.QuestionEntity) (*dao.Ques
 }
 
 func (questionDao *QuestionDao) UpdateQuestion(q *dao.QuestionEntity) (*dao.QuestionEntity, error) {
-
 	s := "update question set statement=$1, answer = $2, answered_by = $3 where id = $4"
 
 	answeredBy := &q.AnsweredBy
@@ -115,11 +110,9 @@ func (questionDao *QuestionDao) UpdateQuestion(q *dao.QuestionEntity) (*dao.Ques
 	}
 
 	return q, nil
-
 }
 
 func (questionDao *QuestionDao) DeleteQuestion(id int) error {
-
 	s := "delete from question where id = $1"
 
 	_, err := questionDao.Connection.Exec(context.Background(), s, id)
@@ -133,7 +126,6 @@ func (questionDao *QuestionDao) DeleteQuestion(id int) error {
 }
 
 func questionRowsToEntity(rows pgx.Rows) (dao.QuestionEntity, error) {
-
 	questionEntity := dao.QuestionEntity{}
 
 	var answer *string
@@ -159,7 +151,6 @@ func questionRowsToEntity(rows pgx.Rows) (dao.QuestionEntity, error) {
 }
 
 func questionRowToEntity(row pgx.Row, errorLogger *log.Logger) (*dao.QuestionEntity, error) {
-
 	questionEntity := &dao.QuestionEntity{}
 
 	var answer *string
