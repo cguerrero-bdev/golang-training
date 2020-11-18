@@ -1,20 +1,15 @@
 FROM golang:latest
 
+WORKDIR /qaa-api
 
-WORKDIR .
+COPY go.mod go.sum ./
 
-COPY go.mod .
-COPY go.sum .
 RUN go mod download
 
 COPY . .
 
-RUN go build -o main ./cmd
-
-WORKDIR /dist
-
-RUN cp /build/main .
+RUN go build -o qaa-api ./api
 
 EXPOSE 3000
 
-CMD ["/dist/main"]
+CMD ["./qaa-api"]
