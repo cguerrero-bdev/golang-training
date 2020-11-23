@@ -51,7 +51,7 @@ func (server *Server) HandleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/questions", server.GetQuestions).Methods("GET")
 	router.HandleFunc("/questions/{id}", server.GetQuestionById).Methods("GET")
-	router.HandleFunc("/questions/user/{userName}", server.GetQuestionsByUserId).Methods("GET")
+	router.HandleFunc("/questions/user/{id}", server.GetQuestionsByUserId).Methods("GET")
 
 	router.HandleFunc("/questions", server.CreateQuestion).Methods("POST")
 	router.HandleFunc("/questions/{id}", server.UpdateQuestion).Methods("PUT")

@@ -11,9 +11,6 @@ The backend should support the following operations:
 - Update an existing question (the statement and/or the answer)
 - Delete an existing question
 
-No user tracking or security needed for this version. 
-Database design is up to you.
-We would like to receive code that runs, so remember to focus on the MVP functionality. You can document what’s missing that you wish you had more time for? Please think about the different problems you might encounter if the business idea is successful. This would include considerations such as increased load, increased data, and an upvoting feature.
 ---
 ## Tech stack
 ---
@@ -24,25 +21,29 @@ We would like to receive code that runs, so remember to focus on the MVP functio
 ---
 **Get one question by its ID** 
 ```sh
-curl -X GET --url http://localhost:3000/questions/1
+curl --location --request GET 'localhost:8080/questions/100'
 ````
 **Get a list of all questions**
 ```sh
-curl -X GET --url http://localhost:3000/questions
+curl --location --request GET 'localhost:8080/questions'
 ````
 **Get all the questions created by a given user**
 ```sh
-
+curl --location --request GET 'localhost:8080/questions/user/1'
 ````
 **Create a new question**
 ```sh
-
+curl --location --request POST 'localhost:8080/questions' \
+--header 'Content-Type: text/plain' \
+--data-raw '{"id":100,"statement":"q100","userid":1,"answer":"","answeredby":0}'
 ````
 **Update an existing question (the statement and/or the answer)**
 ```sh
-
+curl --location --request PUT 'localhost:8080/questions/100' \
+--header 'Content-Type: text/plain' \
+--data-raw '{"id":100,"statement":"Question 100","userid":1,"answer":"Answer Question 100","answeredby":1}'
 ````
 **Delete an existing question**
 ```sh
-
+curl --location --request DELETE 'localhost:8080/questions/100'
 ````
