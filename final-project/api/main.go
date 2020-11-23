@@ -4,10 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/controller"
-	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/dao"
-	"github.com/cguerrero-bdev/golang-training/final-project/api/components/implementation/service"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/controller"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/dao"
 	"github.com/cguerrero-bdev/golang-training/final-project/api/components/server"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/service"
 )
 
 var (
@@ -24,28 +24,25 @@ func main() {
 	server.HandleRequests()
 }
 
-func getQuestionController() *controller.QuestionController {
+func getQuestionController() *controller.QuestionControllerImplementation {
 
 	connection := dao.GetDataBaseConnection()
 
-	userDao := dao.UserDao{
+	questionDao := dao.QuestionDaoImplementation{
 		Connection:  connection,
 		InfoLogger:  InfoLogger,
 		ErrorLogger: ErrorLogger,
 	}
 
-	questionDao := dao.QuestionDao{
-		Connection:  connection,
-		InfoLogger:  InfoLogger,
-		ErrorLogger: ErrorLogger,
-	}
-
-	questionManager := service.QuestionManager{
+	questionManager := service.QuestionManagerImplementation{
 		QuestionDao: &questionDao,
-		UserDao:     &userDao,
+		InfoLogger:  InfoLogger,
+		ErrorLogger: ErrorLogger,
 	}
-	questionController := controller.QuestionController{
+	questionController := controller.QuestionControllerImplementation{
 		QuestionManager: &questionManager,
+		InfoLogger:      InfoLogger,
+		ErrorLogger:     ErrorLogger,
 	}
 
 	return &questionController

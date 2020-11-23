@@ -10,8 +10,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/controller"
-	mockcontroller "github.com/cguerrero-bdev/golang-training/final-project/api/components/mock/controller"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/model"
+	mockcontroller "github.com/cguerrero-bdev/golang-training/final-project/api/mock/controller"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,20 +24,20 @@ func TestGetQuestions(t *testing.T) {
 	InfoLogger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger := log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	want := []controller.JsonQuestion{
+	want := []model.Question{
 		{
-			Id:         "2",
+			Id:         2,
 			Statement:  "Question2",
-			UserName:   "user1",
+			UserId:     1,
 			Answer:     "answere 1",
-			AnsweredBy: "user2",
+			AnsweredBy: 2,
 		},
 		{
-			Id:         "3",
+			Id:         3,
 			Statement:  "Question3",
-			UserName:   "user1",
+			UserId:     1,
 			Answer:     "answere 3",
-			AnsweredBy: "user2",
+			AnsweredBy: 2,
 		},
 	}
 
@@ -67,7 +67,7 @@ func TestGetQuestions(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	result := []controller.JsonQuestion{}
+	result := []model.Question{}
 	err = json.Unmarshal(body, &result)
 
 	assert.NoError(t, err)
@@ -91,13 +91,13 @@ func TestGetQuestionById(t *testing.T) {
 	InfoLogger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger := log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	want := controller.JsonQuestion{
+	want := model.Question{
 
-		Id:         "3",
+		Id:         3,
 		Statement:  "Question3",
-		UserName:   "user1",
+		UserId:     1,
 		Answer:     "answere 3",
-		AnsweredBy: "user2",
+		AnsweredBy: 2,
 	}
 
 	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
@@ -126,7 +126,7 @@ func TestGetQuestionById(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	result := controller.JsonQuestion{}
+	result := model.Question{}
 	err = json.Unmarshal(body, &result)
 
 	assert.NoError(t, err)
@@ -144,10 +144,10 @@ func TestCreateQuestion(t *testing.T) {
 	InfoLogger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger := log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	question := controller.JsonQuestion{
-		Id:        "4",
+	question := model.Question{
+		Id:        4,
 		Statement: "Question4",
-		UserName:  "user1",
+		UserId:    1,
 	}
 
 	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
@@ -184,10 +184,10 @@ func TestUpdateQuestion(t *testing.T) {
 	InfoLogger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger := log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	question := controller.JsonQuestion{
-		Id:        "4",
+	question := model.Question{
+		Id:        4,
 		Statement: "Question4",
-		UserName:  "user1",
+		UserId:    1,
 	}
 
 	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)
@@ -224,10 +224,10 @@ func TestDeleteQuestion(t *testing.T) {
 	InfoLogger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger := log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	question := controller.JsonQuestion{
-		Id:        "4",
+	question := model.Question{
+		Id:        4,
 		Statement: "Question4",
-		UserName:  "user1",
+		UserId:    1,
 	}
 
 	mockQuestionController := mockcontroller.NewMockQuestionController(ctrl)

@@ -4,11 +4,20 @@ import (
 	"context"
 	"log"
 
-	"github.com/cguerrero-bdev/golang-training/final-project/api/components/definition/dao"
+	"github.com/cguerrero-bdev/golang-training/final-project/api/components/model"
 	"github.com/jackc/pgx/v4"
 )
 
-type QuestionDao struct {
+type QuestionDao interface {
+	GetQuestions() ([]model.Question, error)
+	GetQuestionById(id int) (*model.Question, error)
+	CreateQuestion(q *model.Question) (*model.Question, error)
+	GetQuestionsByUserId(id int) ([]model.Question, error)
+	UpdateQuestion(q *model.Question) (*model.Question, error)
+	DeleteQuestion(id int) error
+}
+
+type QuestionDaoImplementation struct {
 	Connection *pgx.Conn
 
 	InfoLogger  *log.Logger
@@ -17,7 +26,7 @@ type QuestionDao struct {
 
 const questionSelect = "select id, statement, created_by, answer, answered_by from question "
 
-func (questionDao *QuestionDao) GetQuestions() ([]dao.QuestionEntity, error) {
+func (questionDao *QuestionDaoImplementation) GetQuestions() ([]model.Question, error) {
 
 	rows, err := questionDao.Connection.Query(context.Background(), questionSelect)
 
@@ -26,7 +35,7 @@ func (questionDao *QuestionDao) GetQuestions() ([]dao.QuestionEntity, error) {
 		return nil, err
 	}
 
-	result := make([]dao.QuestionEntity, 0)
+	result := make([]model.Question, 0)
 
 	for rows.Next() {
 
@@ -42,7 +51,7 @@ func (questionDao *QuestionDao) GetQuestions() ([]dao.QuestionEntity, error) {
 	return result, nil
 }
 
-func (questionDao *QuestionDao) GetQuestionById(id int) (*dao.QuestionEntity, error) {
+func (questionDao *QuestionDaoImplementation) GetQuestionById(id int) (*model.Question, error) {
 
 	row := questionDao.Connection.QueryRow(context.Background(),
 		questionSelect+"where id=$1",
@@ -58,7 +67,7 @@ func (questionDao *QuestionDao) GetQuestionById(id int) (*dao.QuestionEntity, er
 	return result, nil
 }
 
-func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEntity, error) {
+func (questionDao *QuestionDaoImplementation) GetQuestionsByUserId(id int) ([]model.Question, error) {
 
 	rows, err := questionDao.Connection.Query(context.Background(), questionSelect+"where created_by=$1", id)
 	if err != nil {
@@ -66,7 +75,7 @@ func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEnti
 		return nil, err
 	}
 
-	result := make([]dao.QuestionEntity, 0)
+	result := make([]model.Question, 0)
 
 	for rows.Next() {
 
@@ -82,7 +91,7 @@ func (questionDao *QuestionDao) GetQuestionsByUserId(id int) ([]dao.QuestionEnti
 	return result, nil
 }
 
-func (questionDao *QuestionDao) CreateQuestion(q *dao.QuestionEntity) (*dao.QuestionEntity, error) {
+func (questionDao *QuestionDaoImplementation) CreateQuestion(q *model.Question) (*model.Question, error) {
 
 	s := "insert into question (id,statement,created_by) values($1,$2,$3)"
 
@@ -97,7 +106,7 @@ func (questionDao *QuestionDao) CreateQuestion(q *dao.QuestionEntity) (*dao.Ques
 
 }
 
-func (questionDao *QuestionDao) UpdateQuestion(q *dao.QuestionEntity) (*dao.QuestionEntity, error) {
+func (questionDao *QuestionDaoImplementation) UpdateQuestion(q *model.Question) (*model.Question, error) {
 
 	s := "update question set statement=$1, answer = $2, answered_by = $3 where id = $4"
 
@@ -118,7 +127,7 @@ func (questionDao *QuestionDao) UpdateQuestion(q *dao.QuestionEntity) (*dao.Ques
 
 }
 
-func (questionDao *QuestionDao) DeleteQuestion(id int) error {
+func (questionDao *QuestionDaoImplementation) DeleteQuestion(id int) error {
 
 	s := "delete from question where id = $1"
 
@@ -132,9 +141,9 @@ func (questionDao *QuestionDao) DeleteQuestion(id int) error {
 	return nil
 }
 
-func questionRowsToEntity(rows pgx.Rows) (dao.QuestionEntity, error) {
+func questionRowsToEntity(rows pgx.Rows) (model.Question, error) {
 
-	questionEntity := dao.QuestionEntity{}
+	questionEntity := model.Question{}
 
 	var answer *string
 	var answeredBy *int
@@ -158,9 +167,9 @@ func questionRowsToEntity(rows pgx.Rows) (dao.QuestionEntity, error) {
 	return questionEntity, err
 }
 
-func questionRowToEntity(row pgx.Row, errorLogger *log.Logger) (*dao.QuestionEntity, error) {
+func questionRowToEntity(row pgx.Row, errorLogger *log.Logger) (*model.Question, error) {
 
-	questionEntity := &dao.QuestionEntity{}
+	questionEntity := &model.Question{}
 
 	var answer *string
 	var answeredBy *int
