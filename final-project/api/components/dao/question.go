@@ -27,7 +27,6 @@ type QuestionDaoImplementation struct {
 const questionSelect = "select id, statement, created_by, answer, answered_by from question "
 
 func (questionDao *QuestionDaoImplementation) GetQuestions() ([]model.Question, error) {
-
 	rows, err := questionDao.Connection.Query(context.Background(), questionSelect)
 
 	if err != nil {
@@ -52,7 +51,6 @@ func (questionDao *QuestionDaoImplementation) GetQuestions() ([]model.Question, 
 }
 
 func (questionDao *QuestionDaoImplementation) GetQuestionById(id int) (*model.Question, error) {
-
 	row := questionDao.Connection.QueryRow(context.Background(),
 		questionSelect+"where id=$1",
 		id)
@@ -68,7 +66,6 @@ func (questionDao *QuestionDaoImplementation) GetQuestionById(id int) (*model.Qu
 }
 
 func (questionDao *QuestionDaoImplementation) GetQuestionsByUserId(id int) ([]model.Question, error) {
-
 	rows, err := questionDao.Connection.Query(context.Background(), questionSelect+"where created_by=$1", id)
 	if err != nil {
 		questionDao.ErrorLogger.Println(err.Error())
@@ -92,7 +89,6 @@ func (questionDao *QuestionDaoImplementation) GetQuestionsByUserId(id int) ([]mo
 }
 
 func (questionDao *QuestionDaoImplementation) CreateQuestion(q *model.Question) (*model.Question, error) {
-
 	s := "insert into question (id,statement,created_by) values($1,$2,$3)"
 
 	_, err := questionDao.Connection.Exec(context.Background(), s, q.Id, q.Statement, q.UserId)
@@ -107,7 +103,6 @@ func (questionDao *QuestionDaoImplementation) CreateQuestion(q *model.Question) 
 }
 
 func (questionDao *QuestionDaoImplementation) UpdateQuestion(q *model.Question) (*model.Question, error) {
-
 	s := "update question set statement=$1, answer = $2, answered_by = $3 where id = $4"
 
 	answeredBy := &q.AnsweredBy
@@ -124,11 +119,9 @@ func (questionDao *QuestionDaoImplementation) UpdateQuestion(q *model.Question) 
 	}
 
 	return q, nil
-
 }
 
 func (questionDao *QuestionDaoImplementation) DeleteQuestion(id int) error {
-
 	s := "delete from question where id = $1"
 
 	_, err := questionDao.Connection.Exec(context.Background(), s, id)
@@ -142,7 +135,6 @@ func (questionDao *QuestionDaoImplementation) DeleteQuestion(id int) error {
 }
 
 func questionRowsToEntity(rows pgx.Rows) (model.Question, error) {
-
 	questionEntity := model.Question{}
 
 	var answer *string
@@ -168,7 +160,6 @@ func questionRowsToEntity(rows pgx.Rows) (model.Question, error) {
 }
 
 func questionRowToEntity(row pgx.Row, errorLogger *log.Logger) (*model.Question, error) {
-
 	questionEntity := &model.Question{}
 
 	var answer *string
